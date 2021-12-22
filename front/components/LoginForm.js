@@ -4,19 +4,32 @@ import Link from 'next/link';
 import styled from 'styled-components';
 
 const InputItem = styled(Form.Item)`
-display:"flex";
-flexDirection:"column";
-alignItems:"flex-start";
-`
-const LoginForm = () => {
+display:flex;
+flex-direction:column;
+align-items:flex-start;
+`;
+
+const InputId = styled(Input)`
+    width:196px;
+`;
+
+const FormWrapper = styled(Form)`
+    margin: 1rem;
+`;
+
+
+const LoginForm = ({setIsLoggedIn}) => {
 
     const [id,setId] = useState('');
     const [password,setPassword] = useState('');
 
-    const onSubmit = (event)=>{
-        //event.preventDefault();
-        console.log(event);
-    }
+    const onSubmit = useCallback(
+        ()=>{
+            //event.preventDefault();
+            console.log(id,password);
+            setIsLoggedIn(true);
+        },
+    [id,password],) 
 
     const onChange = useCallback((event)=>{
             const {target:{name}} = event;
@@ -27,8 +40,10 @@ const LoginForm = () => {
     []) 
 
     return (
-        <Form onFinish={onSubmit}>
-        <InputItem style={{display:"flex",flexDirection:"column",alignItems:"flex-start"}}
+        <FormWrapper
+        onFinish={onSubmit}
+        autoComplete="off">
+        <InputItem 
             label="아이디"
             name="Id"
             rules={[
@@ -38,10 +53,9 @@ const LoginForm = () => {
             },
             ]}
         >
-        <Input name="Id" value={id} onChange={onChange} style={{width:"194px"}}/>   
+        <InputId name="Id" value={id} onChange={onChange}/>   
         </InputItem>
         <InputItem 
-        style={{display:"flex",flexDirection:"column",alignItems:"flex-start"}}
         label="비밀번호"
         name="password"
         rules={[
@@ -66,7 +80,7 @@ const LoginForm = () => {
            <Link href="/signup"><a>회원가입</a></Link>
         </Button>
         </Form.Item>
-        </Form>
+        </FormWrapper>
     )
 }
 
