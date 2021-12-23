@@ -6,11 +6,13 @@ import LoginForm from './LoginForm';
 import UserProfile from './UserProfile';
 import styled from "styled-components";
 
+
 const InputSearch = styled(Input.Search)`
     vertical-align:middle;
 `;
 
 const AppLayout = ({children}) => {
+
 
     const [isLoggedIn,setIsLoggedIn] = useState(false);
 
@@ -34,17 +36,17 @@ const AppLayout = ({children}) => {
                 </Menu.Item>
             </Menu>
             <Row gutter={6}>
-                <Col xs={24} md={8} >
+                <Col xs={24} md={6} >
                     {isLoggedIn ? <UserProfile setIsLoggedIn={setIsLoggedIn}/>:<LoginForm setIsLoggedIn={setIsLoggedIn}/>}
                 </Col>
-                <Col xs={24} md={10}>
-                    mid
+                <Col xs={24} md={12}>
+                {children}
                 </Col>
                 <Col xs={24} md={6}>
                     <a href='https://www.youtube.com/' target="_blank" rel = "noreferrer noopener">아무링크</a>
                 </Col>
             </Row>
-            {children}
+            
         </div>
     )
 };
