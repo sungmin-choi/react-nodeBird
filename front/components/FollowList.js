@@ -22,7 +22,7 @@ const FollowList = ({name,data}) => {
         >
         <Row gutter={10}>
             {data&& data.map(ele=>{
-                return (<Col span={6}>
+                return (<Col key={ele.nickname} span={6}>
                             <Card title={ele.nickname}>
                                 <ScStopTwoTone />
                             </Card>
@@ -35,7 +35,8 @@ const FollowList = ({name,data}) => {
 }
 
 FollowList.propTypes = {
-
+    name:PropTypes.string.isRequired,
+    data:PropTypes.array
 }
 
 export default FollowList

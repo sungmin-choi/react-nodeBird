@@ -1,7 +1,7 @@
-import React from "react";
-import { useForm } from "react-hook-form";
+import React ,{useCallback}from "react";
 import {Form,Input,Button} from 'antd';
 import styled  from "styled-components";
+import useInput from "./hooks/useInput";
 
 const FormWrapper = styled(Form)`
     margin-top: 1rem;
@@ -18,19 +18,20 @@ const ScInput = styled(Input)`
 `;
 
 const NicknameEditForm = () => {
-    const { register, handleSubmit } = useForm();
+    const [editName,setEditName]= useInput('');
 
-    const onSubmit = ()=>{
-        console.log(register);
-    }
+    const onSubmit = useCallback(()=>{
+        console.log(editName);
+    },[],)
 
     return (
-        <FormWrapper onFinish={handleSubmit(onSubmit)}>
+        <FormWrapper onFinish={onSubmit}>
             <Span>Sungmin</Span>
             <ScInput
                 placeholder="input Edit Name"
                 bordered
-                {...register("editName")}
+                value={editName}
+                onChange={setEditName}
             />
             <Button type="primary" htmlType="submit">Edit</Button>
         </FormWrapper>

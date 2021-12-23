@@ -1,8 +1,8 @@
-import React, { useState,useCallback } from 'react'
+import React,{ useCallback }from 'react'
 import { Form, Input, Button} from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
-
+import useInput from './hooks/useInput';
 const InputItem = styled(Form.Item)`
 display:flex;
 flex-direction:column;
@@ -20,8 +20,8 @@ const FormWrapper = styled(Form)`
 
 const LoginForm = ({setIsLoggedIn}) => {
 
-    const [id,setId] = useState('');
-    const [password,setPassword] = useState('');
+    const [id,setId] = useInput('')
+    const [password,setPassword] = useInput('');
 
     const onSubmit = useCallback(
         ()=>{
@@ -31,13 +31,6 @@ const LoginForm = ({setIsLoggedIn}) => {
         },
     [id,password],) 
 
-    const onChange = useCallback((event)=>{
-            const {target:{name}} = event;
-    
-            if(name === 'Id') setId(event.target.value);
-            else if(name === 'password') setPassword(event.target.password);
-        },
-    []) 
 
     return (
         <FormWrapper
@@ -45,7 +38,6 @@ const LoginForm = ({setIsLoggedIn}) => {
         autoComplete="off">
         <InputItem 
             label="아이디"
-            name="Id"
             rules={[
             {
                 required: true,
@@ -53,11 +45,10 @@ const LoginForm = ({setIsLoggedIn}) => {
             },
             ]}
         >
-        <InputId name="Id" value={id} onChange={onChange}/>   
+        <InputId name="Id" value={id} onChange={setId}/>   
         </InputItem>
         <InputItem 
         label="비밀번호"
-        name="password"
         rules={[
         {
             required: true,
@@ -65,7 +56,7 @@ const LoginForm = ({setIsLoggedIn}) => {
         },
         ]}
         >
-        <Input.Password name="password" value={password}/>
+        <Input.Password name="password" onChange={setPassword}/>
         </InputItem>
         <Form.Item
         wrapperCol={{
