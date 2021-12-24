@@ -4,7 +4,8 @@
   "description": "react-nodeBird-front",
   "main": "index.js",
   "scripts": {
-    "dev": "next"
+    "dev": "next -p 3060",
+    "build": "next build"
   },
   "author": "sungmin-choi",
   "license": "ISC",
@@ -23,6 +24,7 @@
     "react-hook-form": "^7.22.3",
     "react-redux": "^7.2.6",
     "redux": "^4.1.2",
+    "redux-devtools-extension": "^2.13.9",
     "styled-components": "^5.3.3"
   },
   "devDependencies": {

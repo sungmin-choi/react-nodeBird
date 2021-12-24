@@ -3,7 +3,7 @@ import { Form, Input, Button} from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
 import useInput from './hooks/useInput';
-import { loginAction } from '../reducers';
+import { loginAction } from '../reducers/user';
 import { useDispatch } from 'react-redux';
 
 const InputItem = styled(Form.Item)`
