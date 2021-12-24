@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Card, Avatar,Button } from 'antd';
 import styled from 'styled-components';
-
+import { useDispatch } from 'react-redux';
+import { logoutAction } from '../reducers';
 const CardForm = styled(Card)`
     width: 330px;
     margin:1rem;
@@ -11,11 +12,12 @@ const LogOutBtn = styled(Button)`
     margin-top: 1rem;
 `;
 
-const UserProfile = ({setIsLoggedIn})=> {
+const UserProfile = ()=> {
+    const dispatch = useDispatch();
 
-    const onLogOut = ()=>{
-        setIsLoggedIn(false);
-    }
+    const onLogOut = useCallback(()=>{
+        dispatch(logoutAction());
+    },[]);
     return (
         <div>
             <CardForm

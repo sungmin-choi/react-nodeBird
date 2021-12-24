@@ -3,6 +3,9 @@ import { Form, Input, Button} from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
 import useInput from './hooks/useInput';
+import { loginAction } from '../reducers';
+import { useDispatch } from 'react-redux';
+
 const InputItem = styled(Form.Item)`
 display:flex;
 flex-direction:column;
@@ -18,16 +21,16 @@ const FormWrapper = styled(Form)`
 `;
 
 
-const LoginForm = ({setIsLoggedIn}) => {
+const LoginForm = () => {
+    const dispatch = useDispatch()
 
     const [id,setId] = useInput('')
     const [password,setPassword] = useInput('');
 
-    const onSubmit = useCallback(
-        ()=>{
+    const onSubmit = useCallback(()=>{
             //event.preventDefault();
             console.log(id,password);
-            setIsLoggedIn(true);
+            dispatch(loginAction({id,password}));
         },
     [id,password],) 
 
