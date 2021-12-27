@@ -67,3 +67,7 @@ a# 🎯 React-nodeBird 프로젝트
 ```
 
 virtual dom 작성할때 inline 으로 `style={{backgroundColor:"black"}}` 이렇게 스타일링을 한다면 매번 rerendering 할때마다 이 `<Button></Button>` 엘리먼트는 다시 생성해서 다시 그리게 될거다. 왜냐하면 style 안에서 그릴때마다 새로운 객체를 `{}==={} //결과: false(객체는 같은 내용이어도 다르기 떄문이다.)`생성하기 때문에 react에서는 매번 rerendering 할때마다 같은 스타일링이지만 다른 객체로 인식해서 매우 효율을 떨어진다. 해결방법은 이렇게 inline 식으로 스타일링을 하는것이 아닌 따로 빼내서 스타일링 하는것이 최적화에 도움이된다.
+
+### 5.리덕스 에 관하여
+
+내용이 길다보니 벨로그에다가 작성했다. 1.https://velog.io/@sungmin-choi/%EB%A6%AC%EB%8D%95%EC%8A%A4-%EC%82%AC%EC%9A%A9%EA%B8%B0....-with-next.js1 2.
