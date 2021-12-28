@@ -70,4 +70,7 @@ virtual dom 작성할때 inline 으로 `style={{backgroundColor:"black"}}` 이�
 
 ### 5.리덕스 에 관하여
 
-내용이 길다보니 벨로그에다가 작성했다. 1.https://velog.io/@sungmin-choi/%EB%A6%AC%EB%8D%95%EC%8A%A4-%EC%82%AC%EC%9A%A9%EA%B8%B0....-with-next.js1 2.
+내용이 길다보니 벨로그에다가 작성했다. <br>
+
+- <a href="https://velog.io/@sungmin-choi/%EB%A6%AC%EB%8D%95%EC%8A%A4-%EC%82%AC%EC%9A%A9%EA%B8%B0....-with-next.js1">리덕스 기록 1</a> <br/>
+- <a href="https://velog.io/@sungmin-choi/%EB%A6%AC%EB%8D%95%EC%8A%A4-%EC%82%AC%EC%9A%A9%EA%B8%B0....with-Next.js2">리덕스 기록 2</a>
