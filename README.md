@@ -74,3 +74,18 @@ virtual dom 작성할때 inline 으로 `style={{backgroundColor:"black"}}` 이�
 
 - <a href="https://velog.io/@sungmin-choi/%EB%A6%AC%EB%8D%95%EC%8A%A4-%EC%82%AC%EC%9A%A9%EA%B8%B0....-with-next.js1">리덕스 기록 1</a> <br/>
 - <a href="https://velog.io/@sungmin-choi/%EB%A6%AC%EB%8D%95%EC%8A%A4-%EC%82%AC%EC%9A%A9%EA%B8%B0....with-Next.js2">리덕스 기록 2</a>
+
+### 6.input type="file" 과 버튼연동하는 방법
+
+```jsx
+const imageInput = useRef() // react hook useRef 사용해서 돔요소 를 가져온다.
+
+const onImageUpload = useCallback(() = >{
+  imageInput.current.click() // 이렇게 사용하면 버튼 누르면 업로드 창이 뜬다.
+
+},[imageInput.current]) // imageInput.current 소환
+
+<input type="file" accept="image/*" multiple hidden ref={imageInput} /> // hidden 속성을 넣어서 감추기 ref(useRef react hooks 를 써서 dom요소 가져온다.)
+<button onclick={onImageUpload}>이미지 업로드</button>
+
+```

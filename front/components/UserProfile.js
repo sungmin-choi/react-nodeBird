@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { logoutAction } from '../reducers/user';
 const CardForm = styled(Card)`
-    width: 330px;
     margin:1rem;
 `;
 
