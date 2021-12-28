@@ -37,7 +37,7 @@ export const initialized ={
 const dummyPost = {
     id:2,
     User:{
-        id:1,
+        id:"namja",
         nickname:'sungmin'
     },
     content:"새로 올린 포스트",
