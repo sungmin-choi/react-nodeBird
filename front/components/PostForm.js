@@ -32,7 +32,7 @@ const PostForm = props => {
             value={text} 
             onChange={onChangeText} 
             placeholder="어떤 신기한 일이 있었나요?"/>
-            <div>
+            <div style={{marginTop:"10px"}}>
                 <input type="file" accept="image/*" multiple hidden ref={imageInput}/>
                 <Button onClick={onImageInput}>이미지 업로드</Button>
                 <Button type="primary" style={{float:'right'}} htmlType="submit" >짹짹!</Button>

@@ -53,7 +53,7 @@ const PostCard = ({post})=> {
             </Card>
             {commentForOpened && 
             <div>
-                <CommentForm/>
+                <CommentForm post={post}/>
                 <List
                 header={<div>{post.Comment.length}개의 댓글</div>}
                 dataSource={post.Comment}
