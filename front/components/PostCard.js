@@ -1,8 +1,9 @@
 import React, { useCallback, useState } from 'react'
 import PostImages from './PostImages';
-import {Button, Card, Popover,Avatar} from 'antd';
+import {Button, Card, Popover,Avatar,List,Comment} from 'antd';
 import {EllipsisOutlined, HeartOutlined, MessageOutlined, RetweetOutlined ,HeartTwoTone} from '@ant-design/icons';
 import { useSelector } from 'react-redux';
+import CommentForm from './CommentForm';
 import PropTypes from 'prop-types';
 const PostCard = ({post})=> {
     const {me} = useSelector((state)=>state.user);
@@ -26,7 +27,7 @@ const PostCard = ({post})=> {
             actions={[
                 <RetweetOutlined key="retweet"/>,
                 liked?<HeartTwoTone key="twoToneHeart" twoToneColor="#eb2f96"onClick={onToggleLike}/>
-                :<HeartOutlined key="heart" onClick={toggleHeart}/>
+                :<HeartOutlined key="heart" onClick={onToggleLike}/>
                 ,
                 <MessageOutlined  key="comment" onClick={onToggleComment}/>,
                 <Popover key="more" content={
@@ -52,7 +53,20 @@ const PostCard = ({post})=> {
             </Card>
             {commentForOpened && 
             <div>
-                댓글부분.
+                <CommentForm/>
+                <List
+                header={<div>{post.Comment.length}개의 댓글</div>}
+                dataSource={post.Comment}
+                renderItem={comment=>(
+                <li>
+                <Comment 
+                    author={comment.User.nickname}
+                    avatar={<Avatar>{comment.User.nickname[0]}</Avatar>}
+                    content={comment.content}
+                />
+                </li>
+                )}
+                />
             </div>}
 
         </div>
