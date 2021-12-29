@@ -23,7 +23,7 @@ const PostCard = ({post})=> {
         <div>
             <Card
             cover={post.Images[0] && <PostImages images={post.Images}/>}
-            style={{marginBottom:"10px"}}
+            style={{marginBottom:"10px",marginTop:"20px",padding:"1px",width:"410px"}}
             actions={[
                 <RetweetOutlined key="retweet"/>,
                 liked?<HeartTwoTone key="twoToneHeart" twoToneColor="#eb2f96"onClick={onToggleLike}/>
