@@ -5,6 +5,7 @@ import {EllipsisOutlined, HeartOutlined, MessageOutlined, RetweetOutlined ,Heart
 import { useSelector } from 'react-redux';
 import CommentForm from './CommentForm';
 import PropTypes from 'prop-types';
+import PostCardContent from './PostCardContent';
 const PostCard = ({post})=> {
     const {me} = useSelector((state)=>state.user);
     const id = me?.id;
@@ -48,7 +49,7 @@ const PostCard = ({post})=> {
                 <Card.Meta
                 avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
                 title={post.User.nickname}
-                description={post.content}
+                description={ <PostCardContent postData={post.content}/> }
                 ></Card.Meta>
             </Card>
             {commentForOpened && 
