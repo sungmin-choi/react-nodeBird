@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { Card, Avatar,Button } from 'antd';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
-import { logoutAction } from '../reducers/user';
+import { useDispatch, useSelector } from 'react-redux';
+import { logOutRequestAction} from '../reducers/user';
 const CardForm = styled(Card)`
     margin:1rem;
 `;
@@ -14,8 +14,10 @@ const LogOutBtn = styled(Button)`
 const UserProfile = ()=> {
     const dispatch = useDispatch();
 
+    const {me,isLoggingOut} = useSelector((state)=>state.user);
+
     const onLogOut = useCallback(()=>{
-        dispatch(logoutAction());
+        dispatch(logOutRequestAction());
     },[]);
     return (
         <div>
@@ -27,11 +29,11 @@ const UserProfile = ()=> {
             ]}
             >
             <Card.Meta
-                avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-                title="Sungmin Choi"
+                avatar={<Avatar>{me.nickname[0]}</Avatar>}
+                title={me.nickname}
                 description="This is the description"
             />
-            <LogOutBtn onClick={onLogOut}>로그아웃</LogOutBtn>
+            <LogOutBtn loading={isLoggingOut} onClick={onLogOut}>로그아웃</LogOutBtn>
             </CardForm>
         </div>
     )

@@ -3,8 +3,8 @@ import { Form, Input, Button} from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
 import useInput from './hooks/useInput';
-import { loginAction } from '../reducers/user';
-import { useDispatch } from 'react-redux';
+import { loginRequestAction } from '../reducers/user';
+import { useDispatch,useSelector } from 'react-redux';
 
 const InputItem = styled(Form.Item)`
 display:flex;
@@ -24,13 +24,15 @@ const FormWrapper = styled(Form)`
 const LoginForm = () => {
     const dispatch = useDispatch()
 
+    const {isLoggingIn} = useSelector((state)=>state.user);
+
     const [id,setId] = useInput('')
     const [password,setPassword] = useInput('');
 
     const onSubmit = useCallback(()=>{
             //event.preventDefault();
             console.log(id,password);
-            dispatch(loginAction({id,password}));
+            dispatch(loginRequestAction({id,password}));
         },
     [id,password],) 
 
@@ -67,7 +69,7 @@ const LoginForm = () => {
           span: 14,
         }}
         >
-        <Button type="primary" htmlType="submit">
+        <Button type="primary" htmlType="submit" loading={isLoggingIn}>
             로그인
         </Button>
         <Button type="link">
