@@ -13,6 +13,15 @@ export const initialized ={
     loginData:{}
 }
 
+const dummyUser = (data) =>({
+    ...data,
+    nickname:'sungmin',
+    id:1,
+    Posts:[],
+    Followings:[],
+    Followers:[],
+})
+
 export const LOG_IN_REQUEST = 'LOG_IN_REQUEST';
 export const LOG_IN_SUCCESS = 'LOG_IN_SUCCESS';
 export const LOG_IN_FAILURE = 'LOG_IN_FAILURE';
@@ -49,14 +58,7 @@ export const logOutRequestAction =(data)=>{
     }
 }
 
-const dummyUser = (data) =>({
-    ...data,
-    nickname:'sungmin',
-    id:1,
-    Posts:[],
-    Followings:[],
-    Followers:[],
-})
+
 
 const reducer = (state=initialized,action)=>{
     switch(action.type){
@@ -102,6 +104,27 @@ const reducer = (state=initialized,action)=>{
                     logOutLoading:false,
                     logOutError:action.data,
             }
+        case SIGN_UP_REQUEST:
+                return {
+                    ...state,
+                    signUpLoading:true,
+                    signUpDone:false,
+                    signUpError:null
+                }
+    
+        case SIGN_UP_SUCCESS:
+                return {
+                        ...state,
+                        signUpLoading:false,
+                        signUpDone:true,
+                        me:null
+                }
+        case SIGN_UP_FAILURE:
+                return {
+                        ...state,
+                        signUpLoading:false,
+                        signUpError:action.data,
+                }
         default:
             return state;
     }

@@ -4,6 +4,8 @@ import Head from 'next/head';
 import {Form,Input,Checkbox,Button} from 'antd';
 import styled from 'styled-components';
 import useInput from '../components/hooks/useInput';
+import { useDispatch, useSelector } from 'react-redux';
+import { SIGN_UP_REQUEST } from '../reducers/user';
 
 const ScFormItem = styled(Form.Item)`
 display:flex;
@@ -24,13 +26,21 @@ const ScForm = styled(Form)`
 `;
 
 const Signup = () => {
-    const [id,setId] = useInput('');
+    const dispatch = useDispatch();
+
+    const [email,setEmail] = useInput('');
     const [nickName,setNickName] = useInput('');
     const [password,setPassword] = useState('');
     const [passwordCheck,setPasswordCheck] = useState('')
     const [passwordError,setPasswordError] = useState(false);
     const [checkTems,setCheckTems] = useState(false);
 
+    const {signUpLoading} = useSelector((state)=>state.user);
+
+    dispatch({
+        type:SIGN_UP_REQUEST,
+        data:{email,nickName,password}
+    })
     const checkPasswordVaild =useCallback((e)=>{
         const {target:{name}} = e;
         if(name === 'passwordCheck'){
@@ -45,7 +55,7 @@ const Signup = () => {
     },[password,passwordCheck]);
 
     const onSubmit = () => {
-          if(checkTems && passwordError) console.log(id,nickName,password);
+          if(checkTems && passwordError) console.log(email,nickName,password);
     }
 
     return (
@@ -56,11 +66,11 @@ const Signup = () => {
         <AppLayout>
         <ScForm onFinish={onSubmit}>
             <ScFormItem
-                label="아이디"
-                name ="id"
+                label="이메일"
+                name ="email"
                 rules = {[{required:true, message:'아이디 입력해주세요.'},]}
             >
-                <ScInput  name="id" onChange={setId} value={id}/>
+                <ScInput  name="email" onChange={setEmail} value={email}/>
                 </ScFormItem>
             <ScFormItem
                 label="닉네임"
@@ -103,7 +113,7 @@ const Signup = () => {
                 <Checkbox onClick={(e)=>setCheckTems(e.target.checked)}>이용약관 동의</Checkbox>
                 
             </Form.Item>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={signUpLoading}>
                 회원가입
             </Button>
             </ScForm>

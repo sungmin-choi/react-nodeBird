@@ -14,7 +14,7 @@ const LogOutBtn = styled(Button)`
 const UserProfile = ()=> {
     const dispatch = useDispatch();
 
-    const {me,isLoggingOut} = useSelector((state)=>state.user);
+    const {me,logOutLoading} = useSelector((state)=>state.user);
 
     const onLogOut = useCallback(()=>{
         dispatch(logOutRequestAction());
@@ -23,9 +23,9 @@ const UserProfile = ()=> {
         <div>
             <CardForm
             actions={[
-                <div key="twit">짹짹<br/>0</div>,
-                <div key="following">팔로잉<br/>0</div>,
-                <div key="followers">팔로워<br/>0</div>
+                <div key="twit">짹짹<br/>{me.Posts.length}</div>,
+                <div key="following">팔로잉<br/>{me.Followings.length}</div>,
+                <div key="followers">팔로워<br/>{me.Followers.length}</div>
             ]}
             >
             <Card.Meta
@@ -33,7 +33,7 @@ const UserProfile = ()=> {
                 title={me.nickname}
                 description="This is the description"
             />
-            <LogOutBtn loading={isLoggingOut} onClick={onLogOut}>로그아웃</LogOutBtn>
+            <LogOutBtn loading={logOutLoading} onClick={onLogOut}>로그아웃</LogOutBtn>
             </CardForm>
         </div>
     )

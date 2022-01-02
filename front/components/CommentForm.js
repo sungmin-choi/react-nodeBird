@@ -1,8 +1,10 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import {Form,Input,Button} from 'antd'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
+import { ADD_COMMENT_REQUEST } from '../reducers/post'
+import useInput from './hooks/useInput'
 
 const ScButton = styled(Button)`
     position: absolute;
@@ -11,16 +13,27 @@ const ScButton = styled(Button)`
 `
 
 const CommentForm = ({post}) => {
+    const dispatch = useDispatch();
+
     const id = useSelector((state)=>state.user.me?.id);
-    const [text,setText] = useState('');
-    const onChangeText =useCallback((event)=>{
-        setText(event.target.value);
-    },[]);
+    const {addCommentDone} = useSelector((state)=>state.post);
+
+    const [text,onChangeText,setText] = useInput('');
+
+    useEffect(()=>{
+        if(addCommentDone){
+            setText('');
+        }
+    },[addCommentDone])
+
 
     const onSubmit = useCallback(()=>{
         console.log(id,text);
-        setText('');
-    },[text]);
+        dispatch({
+            type:ADD_COMMENT_REQUEST,
+            data:{content:text,id:post.id,userId:id}
+        })
+    },[text,id]);
 
     return (
         <Form onFinish={onSubmit} style={{position:"relative",marginBottom:"30px"}}>

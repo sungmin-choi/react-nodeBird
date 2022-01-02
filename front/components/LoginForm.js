@@ -24,17 +24,17 @@ const FormWrapper = styled(Form)`
 const LoginForm = () => {
     const dispatch = useDispatch()
 
-    const {isLoggingIn} = useSelector((state)=>state.user);
+    const {logInloading} = useSelector((state)=>state.user);
 
-    const [id,setId] = useInput('')
+    const [email,setEmail] = useInput('')
     const [password,setPassword] = useInput('');
 
     const onSubmit = useCallback(()=>{
             //event.preventDefault();
-            console.log(id,password);
-            dispatch(loginRequestAction({id,password}));
+            console.log(email,password);
+            dispatch(loginRequestAction({email,password}));
         },
-    [id,password],) 
+    [email,password]) 
 
 
     return (
@@ -42,7 +42,7 @@ const LoginForm = () => {
         onFinish={onSubmit}
         autoComplete="off">
         <InputItem 
-            label="아이디"
+            label="이메일"
             rules={[
             {
                 required: true,
@@ -50,7 +50,7 @@ const LoginForm = () => {
             },
             ]}
         >
-        <InputId name="Id" value={id} onChange={setId}/>   
+        <InputId name="user-email" value={email} onChange={setEmail}/>   
         </InputItem>
         <InputItem 
         label="비밀번호"
@@ -69,7 +69,7 @@ const LoginForm = () => {
           span: 14,
         }}
         >
-        <Button type="primary" htmlType="submit" loading={isLoggingIn}>
+        <Button type="primary" htmlType="submit" loading={logInloading}>
             로그인
         </Button>
         <Button type="link">
