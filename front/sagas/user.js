@@ -1,4 +1,5 @@
 import { all,fork,takeLatest,put,delay} from "@redux-saga/core/effects";
+import { LOG_IN_SUCCESS,LOG_IN_FAILURE,LOG_OUT_SUCCESS,LOG_IN_REQUEST,LOG_OUT_FAILURE,LOG_OUT_REQUEST } from "../reducers/user";
 import axios from "axios";
 
 function logInAPI(data){//4
@@ -11,13 +12,13 @@ function* logIn(action){//3
 
     yield delay(1000);
     yield put({
-        type:'LOG_IN_SUCCESS',
+        type:LOG_IN_SUCCESS,
         data:action.data
     })
 
     }catch(err){
         yield put({ // redux 액션으로 보내줌. put:dispatch라고 생각하면 편하다.
-            type:'LOG_IN_FAILURE',
+            type:LOG_IN_FAILURE,
             data:err.response.data,
         })
     }
@@ -33,11 +34,11 @@ function* logOut(){//3
     //yield call(logOutAPI);//call: 비동기에서 await 같은 개념이다.
     yield delay(1000);
     yield put({
-        type:'LOG_OUT_SUCCESS',
+        type:LOG_OUT_SUCCESS,
     })
     }catch(err){
         yield put({ // redux 액션으로 보내줌. put:dispatch라고 생각하면 편하다.
-            type:'LOG_OUT_FAILURE',
+            type:LOG_OUT_FAILURE,
             data:err.response.data,
         })
     }
@@ -46,12 +47,12 @@ function* logOut(){//3
 
 
 function* watchLogIn(){//2.
-    yield takeLatest('LOG_IN_REQUEST',logIn); //take 한번만 실행되고 이벤트 삭제된다.
+    yield takeLatest(LOG_IN_REQUEST,logIn); //take 한번만 실행되고 이벤트 삭제된다.
     // 이벤트 리스너 느낌을 준다.
 }
 
 function* watchLogOut(){//2.
-    yield takeLatest('LOG_OUT_REQUEST',logOut);
+    yield takeLatest(LOG_OUT_REQUEST,logOut);
 }
 
 
