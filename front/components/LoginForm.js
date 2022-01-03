@@ -23,7 +23,7 @@ const FormWrapper = styled(Form)`
 function LoginForm() {
   const dispatch = useDispatch();
 
-  const { logInloading } = useSelector((state) => state.user);
+  const { logInLoading } = useSelector((state) => state.user);
 
   const [email, setEmail] = useInput('');
   const [password, setPassword] = useInput('');
@@ -70,7 +70,7 @@ function LoginForm() {
           span: 14,
         }}
       >
-        <Button type="primary" htmlType="submit" loading={logInloading}>
+        <Button type="primary" htmlType="submit" loading={logInLoading}>
           로그인
         </Button>
         <Button type="link">

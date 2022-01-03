@@ -2,21 +2,14 @@ import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Input, Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
 import { ADD_COMMENT_REQUEST } from '../reducers/post';
 import useInput from './hooks/useInput';
-
-const ScButton = styled(Button)`
-    position: absolute;
-    right: 0;
-    bottom: -40px;
-`;
 
 function CommentForm({ post }) {
   const dispatch = useDispatch();
 
   const id = useSelector((state) => state.user.me?.id);
-  const { addCommentDone } = useSelector((state) => state.post);
+  const { addCommentDone, addCommentLoading } = useSelector((state) => state.post);
 
   const [text, onChangeText, setText] = useInput('');
 
@@ -37,7 +30,7 @@ function CommentForm({ post }) {
   return (
     <Form onFinish={onSubmit} style={{ position: 'relative', marginBottom: '30px' }}>
       <Input.TextArea value={text} onChange={onChangeText} rows={4} />
-      <ScButton type="primary" htmlType="submit">삐약</ScButton>
+      <Button style={{ position: 'absolute', right: 0, bottom: -40, zIndex: 1 }} type="primary" htmlType="submit" loading={addCommentLoading}>삐약</Button>
     </Form>
   );
 }

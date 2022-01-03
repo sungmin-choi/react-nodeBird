@@ -14,7 +14,7 @@ function* addPost(action) { // 3
     yield delay(1000);
     yield put({
       type: ADD_POST_SUCCESS,
-      data: '',
+      data: action.data,
 
     });
   } catch (err) {
