@@ -89,3 +89,36 @@ const onImageUpload = useCallback(() = >{
 <button onclick={onImageUpload}>이미지 업로드</button>
 
 ```
+
+### 7.immer 도입
+
+리덕스에서 불변성을 지키기위해 reducer에서 복잡한 코드를 구현해야할때가 많다 이럴때 편하게 구현하라고 나온 라이브러리이다.
+
+```
+npm i immer // 설치
+```
+
+밑에 코드를 보시면 불변성을 지키기위해 작성한 코드가 굉장히 가독성도 떨어지고 에러나기쉬운 코드라고 볼수가있다.
+
+```js
+    case ADD_COMMENT_SUCCESS:
+    {
+      const postIndex = state.mainPosts.findIndex((y) => y.id === action.data.id);
+      const post = { ...state.mainPosts[postIndex] };
+      post.Comment = [dummyComment(action.data.content), ...post.Comment];
+      const mainPosts = [...state.mainPosts];
+      mainPosts[postIndex] = post;
+      return {
+        ...state,
+        addCommentLoading: false,
+        addCommentDone: true,
+        mainPosts,
+      };
+```
+
+```js
+//reducers/user.js
+import produce from 'immer'; // immer 임포트 해주고
+
+const reducer = (state = initialState, action) => {};
+```

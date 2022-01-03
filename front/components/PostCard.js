@@ -1,13 +1,16 @@
 import React, { useCallback, useState } from 'react';
 import { Button, Card, Popover, Avatar, List, Comment } from 'antd';
 import { EllipsisOutlined, HeartOutlined, MessageOutlined, RetweetOutlined, HeartTwoTone } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import CommentForm from './CommentForm';
 import PostImages from './PostImages';
 import PostCardContent from './PostCardContent';
+import { REMOVE_POST_REQUEST } from '../reducers/post';
 
 function PostCard({ post }) {
+  const dispatch = useDispatch();
+  const { removePostLoading } = useSelector((state) => state.post);
   const { me } = useSelector((state) => state.user);
   const id = me?.id;
   const [liked, setLiked] = useState(false);
@@ -19,6 +22,16 @@ function PostCard({ post }) {
 
   const onToggleComment = useCallback(() => {
     setCommentForOpened((prev) => !prev);
+  }, []);
+
+  const removePost = useCallback(() => {
+    // eslint-disable-next-line no-alert
+    if (window.confirm('정말 지우시겠습니까?')) {
+      dispatch({
+        type: REMOVE_POST_REQUEST,
+        data: post.id,
+      });
+    }
   }, []);
 
   return (
@@ -39,7 +52,7 @@ function PostCard({ post }) {
                 {id && post.User.id === id ? (
                   <>
                     <Button>수정</Button>
-                    <Button type="danger">삭제</Button>
+                    <Button type="danger" loading={removePostLoading} onClick={removePost}>삭제</Button>
                   </>
                 )
                   : <Button>신고</Button>}
