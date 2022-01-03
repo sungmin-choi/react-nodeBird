@@ -20,9 +20,9 @@ const dummyUser = (data) => ({
   ...data,
   nickname: 'sungmin',
   id: 1,
-  Posts: [],
-  Followings: [],
-  Followers: [],
+  Posts: [{ id: 1 }],
+  Followings: [{ nickname: 'nicolas' }, { nickname: 'zerocho' }, { nickname: 'ellie' }],
+  Followers: [{ nickname: 'nicolas' }, { nickname: 'zerocho' }, { nickname: 'ellie' }],
 });
 
 export const LOG_IN_REQUEST = 'LOG_IN_REQUEST';
@@ -48,6 +48,9 @@ export const FOLLOW_FAILURE = 'FOLLOW_FAILURE';
 export const UNFOLLOW_REQUEST = 'UNFOLLOW_REQUEST';
 export const UNFOLLOW_SUCCESS = 'UNFOLLOW_SUCCESS';
 export const UNFOLLOW_FAILURE = 'UNFOLLOW_FAILURE';
+
+export const ADD_POST_TO_ME = 'ADD_POST_TO_ME';
+export const REMOVE_POST_OF_ME = 'REMOVE_POST_OF_ME';
 
 export const loginRequestAction = (data) => ({
   type: LOG_IN_REQUEST,
@@ -144,6 +147,15 @@ const reducer = (state = initialized, action) => {
         ...state,
         changeNicknameLoading: false,
         changeNicknameError: action.data,
+      };
+
+    case ADD_POST_TO_ME:
+      return {
+        ...state,
+        me: {
+          ...state.me,
+          Posts: [{ id: action.data }, ...state.me.Posts],
+        },
       };
     default:
       return state;
