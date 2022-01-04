@@ -39,7 +39,7 @@ function PostCard({ post }) {
       <Card
         // eslint-disable-next-line react/prop-types
         cover={post.Images[0] && <PostImages images={post.Images} />}
-        style={{ marginBottom: '10px', marginTop: '20px', padding: '1px', width: '410px' }}
+        style={{ marginBottom: '10px', marginTop: '20px', padding: '1px'}}
         actions={[
           <RetweetOutlined key="retweet" />,
           liked ? <HeartTwoTone key="twoToneHeart" twoToneColor="#eb2f96" onClick={onToggleLike} />
@@ -64,7 +64,7 @@ function PostCard({ post }) {
         ]}
       >
         <Card.Meta
-          avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
+          avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
           title={post.User.nickname}
           description={<PostCardContent postData={post.content} />}
         />
