@@ -70,12 +70,14 @@ function LoginForm() {
           span: 14,
         }}
       >
+        <div style={{display:"flex", width:'180px'}}>
         <Button type="primary" htmlType="submit" loading={logInLoading}>
           로그인
         </Button>
-        <Button type="link">
+        <Button  type="link">
           <Link href="/signup"><a>회원가입</a></Link>
         </Button>
+        </div>
       </Form.Item>
     </FormWrapper>
   );

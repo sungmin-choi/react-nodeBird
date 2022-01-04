@@ -7,6 +7,7 @@ import CommentForm from './CommentForm';
 import PostImages from './PostImages';
 import PostCardContent from './PostCardContent';
 import { REMOVE_POST_REQUEST } from '../reducers/post';
+import FollowButton from './FollowButton';
 
 function PostCard({ post }) {
   const dispatch = useDispatch();
@@ -58,10 +59,12 @@ function PostCard({ post }) {
                   : <Button>신고</Button>}
               </Button.Group>
                   )}
+        
           >
             <EllipsisOutlined />
           </Popover>,
         ]}
+        extra ={id && <FollowButton post={post}/>}
       >
         <Card.Meta
           avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
@@ -95,7 +98,7 @@ function PostCard({ post }) {
 
 PostCard.propTypes = {
   post: PropTypes.shape({
-    id: PropTypes.number,
+    id: PropTypes.string,
     User: PropTypes.object,
     content: PropTypes.string,
     createdAt: PropTypes.object,

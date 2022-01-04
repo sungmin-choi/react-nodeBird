@@ -1,6 +1,12 @@
 import produce from "immer";
 
 export const initialized = {
+  followLoading: false, // 팔로우 시도중
+  followDone: false,
+  followError: null,
+  unFollowLoading: false, // 언팔로우 시도중
+  unFollowDone: false,
+  unFollowError: null,
   logInLoading: false, // 로그인 시도중
   logInDone: false,
   logInError: null,
@@ -23,8 +29,8 @@ const dummyUser = (data) => ({
   nickname: 'sungmin',
   id: 1,
   Posts: [{ id: 1 }],
-  Followings: [{ nickname: 'nicolas' }, { nickname: 'zerocho' }, { nickname: 'ellie' }],
-  Followers: [{ nickname: 'nicolas' }, { nickname: 'zerocho' }, { nickname: 'ellie' }],
+  Followings: [{ id:'nicolas', nickname: 'nicolas' }, { id:'zerocho', nickname: 'zerocho' }, { id:'ellie', nickname: 'ellie' }],
+  Followers: [{ id:'nicolas', nickname: 'nicolas' }, { id:'zerocho', nickname: 'zerocho' }, { id:'ellie', nickname: 'ellie' }],
 });
 
 export const LOG_IN_REQUEST = 'LOG_IN_REQUEST';
@@ -67,9 +73,39 @@ export const logOutRequestAction = (data) => ({
 const reducer = (state = initialized, action) =>{
   return produce(state, (draft)=>{
     switch (action.type) {
+      case FOLLOW_REQUEST:
+        draft.followLoading = true;
+        draft.followError = null;
+        draft.followDone = false;
+        break;
+    case FOLLOW_SUCCESS:
+        draft.followLoading=false;
+        draft.followDone=true;
+        draft.me.Followings.push(action.data);
+        break;
+    case FOLLOW_FAILURE:
+        draft.followDone=false;
+        draft.followLoading=false;
+        draft.followError=action.data;
+        break;
+    case UNFOLLOW_REQUEST:
+          draft.unFollowLoading = true;
+          draft.unFollowError = null;
+          draft.unFollowDone = false;
+          break;
+      case UNFOLLOW_SUCCESS:
+          draft.unFollowLoading=false;
+          draft.unFollowDone=true;
+          draft.me.Followings=draft.me.Followings.filter((ele)=>ele.id !== action.data);
+          break;
+      case UNFOLLOW_FAILURE:
+          draft.unFollowDone=false;
+          draft.unFollowLoading=false;
+          draft.unFollowError=action.data;
+          break;
       case LOG_IN_REQUEST:
           draft.logInLoading = true;
-          draft.logOutError = null;
+          draft.logInError = null;
           draft.logInDone = false;
           break;
       case LOG_IN_SUCCESS:
