@@ -3,42 +3,12 @@ import produce from 'immer';
 import faker from 'faker';
 
 export const initialized = {
-  mainPosts: [{
-    id: 1,
-    User: {
-      id: 1,
-      nickname: 'sungmin',
-    },
-    content: '첫 번째 게시글 #해시태크 #익스프레스',
-    Images: [{
-      id: shortId.generate(),
-      src: 'https://images.velog.io/images/sungmin-choi/post/c50c6d50-c167-4efd-afd5-568b9383c2b6/image.png',
-    }, {
-      id: shortId.generate(),
-      src: 'https://images.velog.io/images/sungmin-choi/post/e80a72fe-5e82-48a7-ab44-8b9e0b49ab07/KakaoTalk_Image_2021-12-27-22-30-22.jpeg',
-    },
-    ],
-    Comment: [{
-      id: shortId.generate(),
-      User: {
-        id: shortId.generate(),
-        nickname: 'hero',
-
-      },
-      content: '우와 멋져요~',
-    },
-    {
-      id: shortId.generate(),
-      User: {
-        id: shortId.generate(),
-        nickname: 'nicolas',
-
-      },
-      content: 'wow awsome!',
-    },
-    ],
-  }],
+  mainPosts: [],
   imagePaths: [],
+  isLoadPosts:true,
+  loadPostsLoading: false,
+  loadPostsDone: false,
+  loadPostsError: null,
   addPostLoading: false,
   addPostDone: false,
   addPostError: null,
@@ -50,26 +20,26 @@ export const initialized = {
   addCommentError: null,
 };
 
-initialized.mainPosts = initialized.mainPosts.concat(
-  Array(20).fill().map((v,i)=>({
-    id:shortId.generate(),
-    User:{
+export const generateDummyPosts = (num) =>{
+   return Array(num).fill().map((v,i)=>({
       id:shortId.generate(),
-      nickname:faker.name.findName(),
-    },
-    content: faker.lorem.paragraph(),
-    Images:[{
-      src:faker.image.imageUrl(),
-    }],
-    Comment:[{
       User:{
         id:shortId.generate(),
         nickname:faker.name.findName(),
       },
-      content: faker.lorem.sentence(),
-    }],
-  }))
-)
+      content: faker.lorem.paragraph(),
+      Images:[{
+        src:faker.image.image(),
+      }],
+      Comment:[{
+        User:{
+          id:shortId.generate(),
+          nickname:faker.name.findName(),
+        },
+        content: faker.lorem.sentence(),
+      }],
+    }))
+}
 
 const dummyPost = (data) => ({
   id: data.id,
@@ -90,6 +60,10 @@ const dummyComment = (data) => ({
   },
   content: data,
 });
+
+export const LOAD_POSTS_REQUEST = 'LOAD_POSTS_REQUEST';
+export const LOAD_POSTS_SUCCESS = 'LOAD_POSTS_SUCCESS';
+export const LOAD_POSTS_FAILURE = 'LOAD_POSTS_FAILURE';
 
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST';
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
@@ -116,6 +90,21 @@ export const addCommentRequest = (data) => ({
 const reducer = (state = initialized, action) => {
     return produce(state, (draft)=>{
         switch (action.type) {
+            case LOAD_POSTS_REQUEST:
+              draft.loadPostsLoading=true;
+              draft.loadPostsDone=false;
+              draft.loadPostsError=null;
+              break;
+            case LOAD_POSTS_SUCCESS:
+                draft.loadPostsLoading=false;
+                draft.loadPostsDone=true;
+                draft.mainPosts=draft.mainPosts.concat(action.data);
+                draft.isLoadPosts = draft.mainPosts.length <50 ;
+                break;
+            case LOAD_POSTS_FAILURE:
+                draft.loadPostsLoading=false;
+                draft.loadPostsError=action.data;
+                break;
             case ADD_POST_REQUEST:
                 draft.addPostLoading=true;
                 draft.addPostDone=false;
