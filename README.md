@@ -122,3 +122,50 @@ import produce from 'immer'; // immer 임포트 해주고
 
 const reducer = (state = initialState, action) => {};
 ```
+
+### 8.MySQL 과 시퀄라이즈 연결하기
+
+백엔드 폴더에서
+
+1. `sequelize` `sequelize-cli` `mysql2`설치 해준다.
+
+```
+npm i sequelize sequelize-cli mysql2
+```
+
+2. `sequelize` 세팅해주기.
+
+```
+npx sequelize init
+```
+
+3. config폴더안에 config.json 파일 설정 해주기.
+
+```json
+{
+  "development": {
+    //개발할때 사용하는 데이터베이스
+    "username": "root",
+    "password": "1234", // 자기계정 비밀번호
+    "database": "react-nodebird", // 프로젝트 이름
+    "host": "127.0.0.1", // 기본으로 localhost 로 설정됨.
+    "dialect": "mysql"
+  },
+  "test": {
+    // 테스트용 데이터베이스.
+    "username": "root",
+    "password": null,
+    "database": "react-nodebird",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    // 배포용 데이터베이스.
+    "username": "root",
+    "password": null,
+    "database": "react-nodebird",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
+```
