@@ -123,7 +123,7 @@ import produce from 'immer'; // immer 임포트 해주고
 const reducer = (state = initialState, action) => {};
 ```
 
-### 8.MySQL 과 시퀄라이즈 연결하기
+### 8.MySQL 과 시퀄라이즈 연결및 모델 설계.
 
 백엔드 폴더에서
 
@@ -195,4 +195,68 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 module.exports = db;
+```
+
+5. 모델 만들기 예시용으로 user모델과 post모델을 만들어 보겠다. 위치는 models 폴더에서 만들어준다
+
+유저모델:
+
+```js
+module.exports = (sequelize, DataTypes) => {
+  const User = sequelize.define(
+    'User',
+    {
+      // MySQL 에는 'User' => users 로 테이블이 생성된다.
+      //id가 기본적으로 들어있다.
+      email: {
+        type: DataTypes.STRING(30),
+        allowNull: false, //필수
+        unique: true, //고유한값
+      },
+      nicknameL: {
+        type: DataTypes.STRING(30),
+        allowNull: false, //필수
+      },
+      password: {
+        type: DataTypes.STRING(100), // 비밀번호는 암호화 되기떄문에 길게 설정해놓는다.
+        allowNull: false, //필수
+      },
+    },
+    {
+      charset: 'utf8', // 이렇게 셋팅안하면 한글넣을시 에라남.
+      collate: 'utf8_general_ci', //한글저장
+    }
+  );
+  User.associate = (db) => {
+    //관계 설정하는 구간.
+    db.User.hasMany(db.Post); // 유저가 많은 포스트를 가질 수 있다.
+  };
+  return User;
+};
+```
+
+포스트모델:
+
+```js
+module.exports = (sequelize, DataTypes) => {
+  const Post = sequelize.define(
+    'Post',
+    {
+      // MySQL 에는 'User' => users 로 테이블이 생성된다.
+      //id가 기본적으로 들어있다.
+      content: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+      },
+    },
+    {
+      charset: 'utf8mb4', // 이렇게 셋팅안하면 한글(이모지)넣을시 에라남.
+      collate: 'utf8mb4_general_ci', //한글(이모지)저장
+    }
+  );
+  Post.associate = (db) => {
+    db.Post.belongsTo(db.User);
+  };
+  return Post;
+};
 ```
