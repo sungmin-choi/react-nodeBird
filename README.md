@@ -1,4 +1,4 @@
-a# 🎯 React-nodeBird 프로젝트
+# 🎯 React-nodeBird 프로젝트
 
 > 프론트: React 를 통한 트위터 클론 프로젝트 (Next.js)프레임워크를 통한 ssr 기법을 적절하게 사용하여 최적화 한 프로젝트 입니다.<br>
 
@@ -260,3 +260,83 @@ module.exports = (sequelize, DataTypes) => {
   return Post;
 };
 ```
+
+6. 모델들 index.js 에 불러오고 연결시켜주기
+
+```js
+const Sequelize = require('sequelize');
+const env = process.env.NODE_ENV || 'development';
+const config = require('../config/config')[env]; //설정한 config 에서 'development' config 가져오자.
+const db = {};
+
+const sequelize = new Sequelize(
+  config.database,
+  config.username,
+  config.password,
+  config
+); // 시퀄라이즈 노드랑mysql 연결해주는 역할.
+
+db.Comment = require('./comment')(sequelize, Sequelize); // 모델 불러오고 실행해준다.
+db.Hashtag = require('./hashtag')(sequelize, Sequelize);
+db.Post = require('./Post')(sequelize, Sequelize);
+db.User = require('./user')(sequelize, Sequelize);
+db.Image = require('./image')(sequelize, Sequelize);
+
+Object.keys(db).forEach((modelName) => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
+
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+module.exports = db;
+```
+
+7. express 와 db 연결하기.
+   app.js
+
+```js
+const express = require('express');
+const app = express();
+const port = 3065;
+const postRouter = require('./routes/post');
+const db = require('./models'); // models/index.js 에서 db 가져오기.
+db.sequelize
+  .sync() // 비동기 연결 시도.
+  .then(() => {
+    console.log('db 연결 성공');
+  })
+  .catch(console.error);
+
+app.use('/post', postRouter);
+
+app.listen(port, () => {
+  console.log(`app listening at http://localhost:${port}`);
+});
+```
+
+db 해당 프로젝트에 먼저 생성해줍시다.
+
+```
+npx sequelize db:create
+```
+
+db 연결성공 메시지 뜨면 연결이 된거다.
+그리고 매번 백엔드쪽 고치면 db를 새로고침 해야할 다소 귀찮은점이 있다 그래서 그런걸 해결하기 위해서
+
+```
+npm i -D nodemon
+```
+
+설치해주고 개발을 시작하자.
+패키지.json 가서 "node app.js" => 'nodemon app.js'
+
+```json
+  "scripts": {
+    "dev": "nodemon app.js" //=>'nodemon app.js' 이렇게 바꿔주세요
+  },
+```
+
+npm run dev 로 실행.

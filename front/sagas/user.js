@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { all, fork, takeLatest, put, delay } from '@redux-saga/core/effects';
+import { all, fork, takeLatest, put, delay,call} from '@redux-saga/core/effects';
 import axios from 'axios';
 import { LOG_IN_SUCCESS, LOG_IN_FAILURE, LOG_IN_REQUEST,
   LOG_OUT_SUCCESS, LOG_OUT_FAILURE, LOG_OUT_REQUEST,
@@ -49,13 +49,13 @@ function* logOut() { // 3
 }
 
 function signUpAPI(data) { // 4
-  return axios.post('/api/signUp', data);
+  return axios.post('http://localhost:3065/user', data); // 백엔드 서버로 회원가입정보 전송.
 }
 
 function* signUp(action) { // 3
   try {
-    // yield call(signUpAPI,action.data);//call: 비동기에서 await 같은 개념이다.
-    yield delay(1000);
+    const result = yield call(signUpAPI,action.data);//call: 비동기에서 await 같은 개념이다.
+    console.log(result);
     yield put({
       type: SIGN_UP_SUCCESS,
       data: action.data,
