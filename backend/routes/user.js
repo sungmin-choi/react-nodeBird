@@ -24,7 +24,7 @@ router.post('/',async (req, res, next)=>{
     res.status(200).json('ok'); // 성공상태 200
     }catch (error){
         console.log(error);
-        next(error); // 에러가 생기면 express 에서 알아서  에러를 한방에 넘겨준다.
+        next(error); // 에러가 생기면 express 에서 알아서  에러를 한방에 넘겨준다. status:500
     }
 });
 

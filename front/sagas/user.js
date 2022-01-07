@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { all, fork, takeLatest, put, delay,call} from '@redux-saga/core/effects';
+import { all, fork, takeLatest, put, delay, call} from '@redux-saga/core/effects';
 import axios from 'axios';
 import { LOG_IN_SUCCESS, LOG_IN_FAILURE, LOG_IN_REQUEST,
   LOG_OUT_SUCCESS, LOG_OUT_FAILURE, LOG_OUT_REQUEST,

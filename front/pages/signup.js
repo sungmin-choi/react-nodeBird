@@ -1,4 +1,4 @@
-import React,{useCallback,useRef,useState} from 'react'
+import React,{useCallback,useEffect,useState} from 'react'
 import AppLayout from '../components/AppLayout'
 import Head from 'next/head';
 import {Form,Input,Checkbox,Button} from 'antd';
@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import useInput from '../components/hooks/useInput';
 import { useDispatch, useSelector } from 'react-redux';
 import { SIGN_UP_REQUEST } from '../reducers/user';
+import { useRouter } from 'next/router'
 
 const ScFormItem = styled(Form.Item)`
 display:flex;
@@ -27,20 +28,30 @@ const ScForm = styled(Form)`
 
 const Signup = () => {
     const dispatch = useDispatch();
+    const router = useRouter();
 
     const [email,setEmail] = useInput('');
-    const [nickName,setNickName] = useInput('');
+    const [nickname,setNickName] = useInput('');
     const [password,setPassword] = useState('');
     const [passwordCheck,setPasswordCheck] = useState('')
     const [passwordError,setPasswordError] = useState(false);
     const [checkTems,setCheckTems] = useState(false);
 
-    const {signUpLoading} = useSelector((state)=>state.user);
+    const {signUpLoading, signUpDone, signUpError} = useSelector((state)=>state.user);
+    
+    useEffect(()=>{
+        if(signUpDone){
+            router.push('/');
+        }
 
-    dispatch({
-        type:SIGN_UP_REQUEST,
-        data:{email,nickName,password}
-    })
+    },[signUpDone]);
+
+    useEffect(()=>{
+        if(signUpError){
+            alert(signUpError);
+        }
+    },[signUpError])
+
     const checkPasswordVaild =useCallback((e)=>{
         const {target:{name}} = e;
         if(name === 'passwordCheck'){
@@ -54,9 +65,15 @@ const Signup = () => {
         
     },[password,passwordCheck]);
 
-    const onSubmit = () => {
-          if(checkTems && passwordError) console.log(email,nickName,password);
-    }
+    const onSubmit = useCallback(()=>{
+          if(checkTems && passwordError) {
+              console.log(email,nickname,password);
+              dispatch({
+                type:SIGN_UP_REQUEST,
+                data:{email,nickname,password}
+            })
+          }
+    },[checkTems,passwordError]);
 
     return (
         <div>
@@ -77,7 +94,7 @@ const Signup = () => {
                 name ="nickName"
                 rules = {[{required:true, message:'닉네임 입력해주세요.'},]}
             >
-                <ScInput  name="nickName" onChange={setNickName} value={nickName}/>
+                <ScInput  name="nickName" onChange={setNickName} value={nickname}/>
             </ScFormItem>
             <ScFormItem
                 label="비밀번호"
