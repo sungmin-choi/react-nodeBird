@@ -31,7 +31,6 @@ function LoginForm() {
   const onSubmit = useCallback(
     () => {
     // event.preventDefault();
-      console.log(email, password);
       dispatch(loginRequestAction({ email, password }));
     },
     [email, password],

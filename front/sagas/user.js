@@ -9,17 +9,15 @@ import { LOG_IN_SUCCESS, LOG_IN_FAILURE, LOG_IN_REQUEST,
 } from '../reducers/user';
 
 function logInAPI(data) { // 4
-  return axios.post('/api/login', data);
+  return axios.post('/user/login', data);
 }
 
 function* logIn(action) { // 3
   try {
-    // const result = yield call(logInAPI,action.data);//call: 비동기에서 await 같은 개념이다.
-
-    yield delay(1000);
+    const result = yield call(logInAPI,action.data);//call: 비동기에서 await 같은 개념이다.
     yield put({
       type: LOG_IN_SUCCESS,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({ // redux 액션으로 보내줌. put:dispatch라고 생각하면 편하다.
@@ -49,7 +47,7 @@ function* logOut() { // 3
 }
 
 function signUpAPI(data) { // 4
-  return axios.post('http://localhost:3065/user', data); // 백엔드 서버로 회원가입정보 전송.
+  return axios.post('/user', data); // 백엔드 서버로 회원가입정보 전송.
 }
 
 function* signUp(action) { // 3

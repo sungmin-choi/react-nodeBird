@@ -1,7 +1,28 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const passport = require('passport');
 const {User} = require('../models'); //모델  models/index 에서 가져오기 
 const router = express.Router();
+
+
+router.post('/login', (req,res,next)=>{
+    passport.authenticate('local',(err,user,info)=>{
+        if(err){
+            console.log(err);
+            return next(err);
+        }
+        if(info){
+            return res.status(401).send(info.reason); // 로그인 문제 생겻을때 보통 401로 접속.
+        }
+        return req.login(user, async(loginErr)=>{
+            if(loginErr){
+                console.log(loginErr);
+                return next(loginErr);
+            }
+            return res.json(user);
+        });
+    })(req,res,next);
+});
 
 router.post('/',async (req, res, next)=>{
     try{ 
