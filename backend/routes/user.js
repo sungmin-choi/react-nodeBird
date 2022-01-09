@@ -19,7 +19,7 @@ router.post('/login', (req,res,next)=>{
                 console.log(loginErr);
                 return next(loginErr);
             }
-            return res.json(user);
+            return res.status(200).json(user);
         });
     })(req,res,next);
 });
