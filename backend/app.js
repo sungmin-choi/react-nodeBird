@@ -43,6 +43,7 @@ app.use(passport.session());
 app.use('/post',postRouter);
 app.use('/user',userRouter);
 
+
 app.listen(port, ()=>{
     console.log(`app listening at http://localhost:${port}`);
 })

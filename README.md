@@ -340,3 +340,234 @@ npm i -D nodemon
 ```
 
 npm run dev 로 실행.
+
+7. passport.js 사용기(passport-local) 전략짜기.
+
+passport 라이브러리 설치
+
+```
+npm install passport
+```
+
+이메일 과 비밀번호로 로그인 하기위해서 passport-local 설치
+
+```
+npm install passport-local
+```
+
+passport.js 는 `session` 을통해서 정보를 소통하기 때문에 session middleware 를 사용해야한다.
+
+기본 app.js
+
+```js
+const express = require('express');
+const cors = require('cors');
+const app = express();
+const port = 3065;
+const postRouter = require('./routes/post');
+const userRouter = require('./routes/user');
+const db = require('./models'); // models/index.js 에서 db 가져오기.
+const passportConfig = require('./passport');
+const session = require('express-session');
+const passport = require('passport');
+const cookieParser = require('cookie-parser');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+db.sequelize
+  .sync() // 데이터베이스 시퀄라이즈 연결용
+  .then(() => {
+    console.log('db 연결 성공');
+  })
+  .catch(console.error);
+
+passportConfig();
+
+app.use(
+  cors({
+    // cors 문제 해결 npm i cors
+    origin: '*', // *: 모든도메인 허용
+    credentials: false, //
+  })
+);
+
+app.use(express.json()); //프론트에서 받은 데이터가 json 형태이먄 json 데이터를 req.body 에 넣어준다.
+app.use(express.urlencoded({ extended: true })); // 프론트에서 받은 데이터가 form형식 데이터 일때  폼데이터를 req.body 에 넣어준다.
+app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(
+  session({
+    saveUninitialized: false,
+    resave: false,
+    secret: process.env.COOKIE_SECRET,
+  })
+);
+app.use(passport.initialize()); // 패스포트 설정 미들웨어에 추가.
+app.use(passport.session());
+
+app.use('/post', postRouter);
+app.use('/user', userRouter);
+
+app.listen(port, () => {
+  console.log(`app listening at http://localhost:${port}`);
+});
+```
+
+패스포트 필수 설정
+
+```js
+const express = require('express');
+const app = express();
+const passport = require('passport');
+const passportConfig = require('./passport'); // passport 의 기본 설정을 따로 쪼개서 넣어놧다
+
+passportConfig(); // passportConfig 불러오기.
+
+app.use(
+  session({
+    saveUninitialized: false,
+    resave: false,
+    secret: process.env.COOKIE_SECRET,
+  })
+); // 세션을 미들웨어에 추가 해줘야 passport 와 소통할수있다.
+
+app.use(passport.initialize()); // 패스포트 설정 미들웨어에 추가.
+app.use(passport.session());
+```
+
+userRouter.js:
+
+```js
+const express = require('express');
+const bcrypt = require('bcrypt');
+const passport = require('passport');
+const { User } = require('../models'); //모델  models/index 에서 가져오기
+const router = express.Router();
+
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      console.log(err);
+      return next(err);
+    }
+    if (info) {
+      return res.status(401).send(info.reason); // 로그인 문제 생겻을때 보통 401로 접속.
+    }
+    return req.login(user, async (loginErr) => {
+      if (loginErr) {
+        console.log(loginErr);
+        return next(loginErr);
+      }
+      return res.status(200).json(user);
+    });
+  })(req, res, next);
+});
+```
+
+passportConfig.js:
+
+```js
+const passport = require('passport');
+const local = require('./local'); // 로컬 에다가 passport-local 전략 구현
+const { User } = require('../models');
+
+module.exports = () => {
+  passport.serializeUser((user, done) => {
+    done(null, user.id);
+  });
+
+  passport.deserializeUser(async (id, done) => {
+    try {
+      const user = await User.findOne({
+        where: {
+          id,
+        },
+      });
+      done(null, user);
+    } catch (err) {
+      console.error(err);
+      done(err);
+    }
+  });
+  local(); // 전략 호출.
+};
+```
+
+local.js: passport-local 전략
+
+```js
+const passport = require('passport');
+const { User } = require('../models');
+const bcrypt = require('bcrypt');
+const { Strategy: LocalStrategy } = require('passport-local');
+
+module.exports = () => {
+  passport.use(
+    new LocalStrategy(
+      {
+        usernameField: 'email',
+        passwordField: 'password',
+      },
+      async (email, password, done) => {
+        try {
+          const user = await User.findOne({
+            where: {
+              email,
+            },
+          });
+          if (!user) {
+            return done(null, false, { reason: '존재하지 않는 사용자입니다.' }); // done(서버에러,성공유무,클라이언트에러)
+          }
+          const result = await bcrypt.compare(password, user.password); // 해쉬암호화된 비밀번호가 일치한지 비교한다.
+          if (result) {
+            return done(null, user);
+          }
+          return done(null, false, { reason: '비밀번호가 틀렸습니다' });
+        } catch (error) {
+          console.log(error);
+          return done(error);
+        }
+      }
+    )
+  );
+};
+```
+
+#### passport.js 를 이용한 local 전략 로그인 흐름
+
+1. 프론트에서 email 과 password 데이터를 받아와 new LocalStrategy() 로 이동
+
+```js
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: 'email', // 프론트에서 받은 email
+      passwordField: 'password', // 프론트에서 받은 password
+    },
+    async (email, password, done) => {
+      try {
+        const user = await User.findOne({
+          // 비동기를 통해서 데이터베이스 User테이블에서 해당 로그인 email 이 있는지 확인하고 찾아준다.
+          where: {
+            email,
+          },
+        });
+        if (!user) {
+          // email 유저가 없다면
+          return done(null, false, { reason: '존재하지 않는 사용자입니다.' }); // done(서버에러,성공유무,클라이언트에러)
+        }
+        const result = await bcrypt.compare(password, user.password); // 해쉬암호화된 비밀번호가 일치한지 비교한다.
+        if (result) {
+          // 비밀번호가 맞다면
+          return done(null, user);
+        }
+        return done(null, false, { reason: '비밀번호가 틀렸습니다' });
+      } catch (error) {
+        //서버에러
+        console.log(error);
+        return done(error);
+      }
+    }
+  )
+);
+```
