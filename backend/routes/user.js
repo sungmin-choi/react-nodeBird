@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
-const {User} = require('../models'); //모델  models/index 에서 가져오기 
+const {User,Post} = require('../models'); //모델  models/index 에서 가져오기 
 const router = express.Router();
 
 
@@ -19,7 +19,24 @@ router.post('/login', (req,res,next)=>{
                 console.log(loginErr);
                 return next(loginErr);
             }
-            return res.status(200).json(user);
+            const fullUserWithoutPassword = await User.findOne({
+                where:{id:user.id},
+                attributes:{
+                    exclude: ['password']
+                },
+                include:[{
+                    model:Post,
+                },{
+                    model:User,
+                    as:'Followings',
+                },{
+                    model:User,
+                    as:'Followers',
+                }
+                ]
+            })
+
+            return res.status(200).json(fullUserWithoutPassword);
         });
     })(req,res,next);
 });
@@ -49,5 +66,11 @@ router.post('/',async (req, res, next)=>{
     }
 });
 
+
+router.post('/user/logout', (req, res, next)=>{
+    req.logOut();
+    req.session.destroy();
+    res.status(201).send('ok');
+})
 
 module.exports = router;

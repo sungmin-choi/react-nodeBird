@@ -535,14 +535,23 @@ module.exports = () => {
 
 #### passport.js 를 이용한 local 전략 로그인 흐름
 
-1. 프론트에서 email 과 password 데이터를 받아와 new LocalStrategy() 로 이동
+1. 프론트에서 email 과 password 데이터를 받아와 `/login` 주소로 req.body 로 전송
+
+```js
+outer.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => { //인증후 받는 콜백함수 done(err,user,info)
+    ....
+});
+```
+
+2. req.body 값가지고 new LocalStrategy() 로 이동
 
 ```js
 passport.use(
   new LocalStrategy(
     {
-      usernameField: 'email', // 프론트에서 받은 email
-      passwordField: 'password', // 프론트에서 받은 password
+      usernameField: 'email', // 프론트에서 받은 email (req.body.email)
+      passwordField: 'password', // 프론트에서 받은 password (req.body.password)
     },
     async (email, password, done) => {
       try {
@@ -570,4 +579,57 @@ passport.use(
     }
   )
 );
+```
+
+3. done(err,user,info) 콜백함수 받아서 조작하기
+
+```js
+router.post('/login', (req, res, next) => {
+  //req,res,next 사용하기 위해서 확장 미들웨어 하는 코딩방식 진행
+  passport.authenticate('local', (err, user, info) => {
+    //done 콜백함수 여기서 받는다
+    if (err) {
+      // 서버 에러 낫을때
+      console.log(err);
+      return next(err);
+    }
+    if (info) {
+      // 클라이언트쪽 서버 문제 생겻을떄
+      return res.status(401).send(info.reason); // 로그인 문제 생겻을때 보통 401로 접속.
+    }
+    return req.login(user, async (loginErr) => {
+      // 정상적이게 user 받아왔을때  여기 진행되면서 동시에  serializeUser 쪽도 실행해야한다.
+      if (loginErr) {
+        //로그인 도중 에러
+        console.log(loginErr);
+        return next(loginErr);
+      }
+      return res.status(200).json(user); // 성공하면 user 정보를 프론트로 전송
+    });
+  })(req, res, next);
+});
+```
+
+4.  req.login(user, async (loginErr)=>) passport 로그인 실행돨때 밑에 부분도 동시에 실행이 된다
+
+```js
+passport.serializeUser((user, done) => {
+  done(null, user.id); //백엔드 session 에 userid 저장 프론트에는 암호화된 user정보 를 쿠키에 저장.
+});
+
+passport.deserializeUser(async (id, done) => {
+  // 로그인 한 상태에서 매번 유저정보 불러올때 실행이 된다.
+  try {
+    const user = await User.findOne({
+      // User 모델에서 지금 로그인한 id 값과 일치한 정보를 user 에 담는다
+      where: {
+        id,
+      },
+    });
+    done(null, user); // 찾은 유저 반환. req.user 이렇게 정보를 저장
+  } catch (err) {
+    console.error(err);
+    done(err);
+  }
+});
 ```
