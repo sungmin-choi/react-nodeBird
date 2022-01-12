@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Form, Input, Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { addPostRequest } from '../reducers/post';
+import { ADD_POST_REQUEST} from '../reducers/post';
 import useInput from './hooks/useInput';
 
 function PostForm() {
@@ -20,7 +20,10 @@ function PostForm() {
   }, [addPostDone]);
 
   const onSubmit = useCallback(() => {
-    dispatch(addPostRequest(text));
+    dispatch({
+      type: ADD_POST_REQUEST,
+      data: {content:text},
+    });
   }, [text]);
 
   const onImageInput = useCallback(() => {

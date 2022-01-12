@@ -77,8 +77,8 @@ function PostCard({ post }) {
             <div>
               <CommentForm post={post} />
               <List
-                header={<div>{post.Comment.length}개의 댓글</div>}
-                dataSource={post.Comment}
+                header={<div>{post.Comments.length}개의 댓글</div>}
+                dataSource={post.Comments}
                 renderItem={(comment) => (
                   <li>
                     <Comment
@@ -98,10 +98,10 @@ function PostCard({ post }) {
 
 PostCard.propTypes = {
   post: PropTypes.shape({
-    id: PropTypes.string,
+    id: PropTypes.number,
     User: PropTypes.object,
     content: PropTypes.string,
-    createdAt: PropTypes.object,
+    createdAt: PropTypes.string,
     Comment: PropTypes.arrayOf(PropTypes.object),
     imagePaths: PropTypes.arrayOf(PropTypes.object),
   }).isRequired,

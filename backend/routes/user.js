@@ -18,7 +18,8 @@ router.get('/', async(req,res,next)=>{
                 exclude:['password'],
             },
             include:[{
-                model:Post
+                model:Post,
+                attributes:['id'],
             },
             {
                model:User,
@@ -30,6 +31,7 @@ router.get('/', async(req,res,next)=>{
                 attributes:['id'],
             }]
         });
+        console.log('로그인',fullUserWithoutPassword.dataValues);
         res.status(200).json(fullUserWithoutPassword);
         }else{
             res.status(200).json(null);

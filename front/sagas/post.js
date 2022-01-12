@@ -5,23 +5,22 @@ import axios from 'axios';
 import { ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE,
   ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE,
   REMOVE_POST_REQUEST, REMOVE_POST_SUCCESS, REMOVE_POST_FAILURE, 
-  LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, LOAD_POSTS_FAILURE,
-generateDummyPosts} from '../reducers/post';
+  LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, LOAD_POSTS_FAILURE} from '../reducers/post';
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducers/user';
 
 
 
-function loadPostsAPI(data) {
-  axios.get('/api/posts');
+function loadPostsAPI() {
+  return axios.get('/posts');
 }
 
-function* loadPosts(action) { // 3
+function* loadPosts() {
   try {
-    // const result = yeild call(addPostAPI,action.data);
-    yield delay(1000);
+    const result = yield call(loadPostsAPI);
+    console.log(result.data);
     yield put({
       type: LOAD_POSTS_SUCCESS,
-      data: generateDummyPosts(10),
+      data: result.data,
     });
   } catch (err) {
     yield put({
@@ -33,11 +32,10 @@ function* loadPosts(action) { // 3
 
 
 function addPostAPI(data) {
-  axios.post('/post',{content: data});
+  return axios.post('/post',data);
 }
 
-function* addPost(action) { // 3
-  
+function* addPost(action) { 
   try {
     const result = yield call(addPostAPI,action.data);
     yield put({
@@ -46,9 +44,10 @@ function* addPost(action) { // 3
     });
     yield put({
       type: ADD_POST_TO_ME,
-      data: result.data.id,
+      data: Number(result.data.id),
     });
   } catch (err) {
+    console.log("hi",err);
     yield put({
       type: ADD_POST_FAILURE,
       data: err.response.data,
@@ -57,7 +56,7 @@ function* addPost(action) { // 3
 }
 
 function addCommentAPI(data) {
-  axios.post(`/post/${data.postId}/comment`,data);
+  return axios.post(`/post/${data.postId}/comment`,data);
 }
 
 function* addComment(action) {
@@ -68,6 +67,7 @@ function* addComment(action) {
       data: result.data,
     });
   } catch (err) {
+    console.error(err);
     yield put({
       type: ADD_COMMENT_FAILURE,
       data: err.response.data,
