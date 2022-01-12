@@ -28,13 +28,12 @@ function* logIn(action) { // 3
 }
 
 function logOutAPI() { // 4
-  return axios.post('/api/logout');
+  return axios.post('/user/logout');
 }
 
 function* logOut() { // 3
   try {
-    // yield call(logOutAPI);//call: 비동기에서 await 같은 개념이다.
-    yield delay(1000);
+    yield call(logOutAPI);//call: 비동기에서 await 같은 개념이다.
     yield put({
       type: LOG_OUT_SUCCESS,
     });

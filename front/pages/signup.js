@@ -37,14 +37,21 @@ const Signup = () => {
     const [passwordError,setPasswordError] = useState(false);
     const [checkTems,setCheckTems] = useState(false);
 
-    const {signUpLoading, signUpDone, signUpError} = useSelector((state)=>state.user);
+    const {signUpLoading, signUpDone, signUpError,me} = useSelector((state)=>state.user);
     
     useEffect(()=>{
         if(signUpDone){
-            router.push('/');
+            router.replace('/');
         }
 
     },[signUpDone]);
+
+    useEffect(()=>{
+        if(me && me.id){
+            router.replace('/');
+        }
+
+    },[me && me.id]);
 
     useEffect(()=>{
         if(signUpError){

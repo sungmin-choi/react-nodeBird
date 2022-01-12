@@ -9,6 +9,7 @@ const PostCardContent = ({postData}) => {
                 if(tag.match(/#[^\s#]+/)){
                     return <Link key={index} href={`/hashtag/${tag.slice(1)}`}><a>{tag}</a></Link>
                 }
+                
                 return tag
             })}
             

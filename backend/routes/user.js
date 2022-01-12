@@ -3,9 +3,9 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 const {User,Post} = require('../models'); //모델  models/index 에서 가져오기 
 const router = express.Router();
+const {isLoggedIn,isNotLoggedIn} = require('../passport/middlewares');
 
-
-router.post('/login', (req,res,next)=>{
+router.post('/login', isNotLoggedIn,(req,res,next)=>{
     passport.authenticate('local',(err,user,info)=>{
         if(err){
             console.log(err);
@@ -41,7 +41,7 @@ router.post('/login', (req,res,next)=>{
     })(req,res,next);
 });
 
-router.post('/',async (req, res, next)=>{
+router.post('/',isNotLoggedIn, async (req, res, next)=>{
     try{ 
         // 중복된 이메일이 있는지 검사.
     const exitUser = await User.findOne({ //시퀄라이저.js 레코드 조회방법중 하나  비동기 이다.
@@ -67,7 +67,7 @@ router.post('/',async (req, res, next)=>{
 });
 
 
-router.post('/user/logout', (req, res, next)=>{
+router.post('/logout', isLoggedIn, (req, res, next)=>{
     req.logOut();
     req.session.destroy();
     res.status(201).send('ok');

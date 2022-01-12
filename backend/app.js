@@ -22,8 +22,8 @@ db.sequelize.sync()
 passportConfig();
 
 app.use(cors({  // cors 문제 해결 npm i cors  
-    origin: '*', // *: 모든도메인 허용
-    credentials: false, // 
+    origin: 'http://localhost:3060', // *: 모든도메인 허용
+    credentials: true, // 쿠키를 프런트와 주고 받기 위해
 }
 ))
 

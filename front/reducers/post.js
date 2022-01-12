@@ -41,16 +41,6 @@ export const generateDummyPosts = (num) =>{
     }))
 }
 
-const dummyPost = (data) => ({
-  id: data.id,
-  User: {
-    id: 1,
-    nickname: 'sungmin',
-  },
-  content: data.content,
-  Images: [],
-  Comment: [],
-});
 
 const dummyComment = (data) => ({
   id: shortId.generate(),
@@ -113,7 +103,7 @@ const reducer = (state = initialized, action) => {
             case ADD_POST_SUCCESS:
                 draft.addPostLoading=false;
                 draft.addPostDone=true;
-                draft.mainPosts.unshift(dummyPost(action.data));
+                draft.mainPosts.unshift(action.data);
                 break;
             case ADD_POST_FAILURE:
                 draft.addPostLoading=false;
@@ -139,8 +129,8 @@ const reducer = (state = initialized, action) => {
                 draft.addCommentError=null;
                 break;
             case ADD_COMMENT_SUCCESS:
-                const post = draft.mainPosts.find((y) => y.id === action.data.id);
-                post.Comment.unshift(dummyComment(action.data.content));
+                const post = draft.mainPosts.find((y) => y.id === action.data.PostId);
+                post.Comment.unshift(action.data);
                 draft.addCommentLoading = false;
                 draft.addCommentDone = true;
                 break;
