@@ -6,7 +6,28 @@ import { LOG_IN_SUCCESS, LOG_IN_FAILURE, LOG_IN_REQUEST,
   SIGN_UP_REQUEST, SIGN_UP_SUCCESS, SIGN_UP_FAILURE, 
   FOLLOW_REQUEST, UNFOLLOW_REQUEST, FOLLOW_SUCCESS, 
   FOLLOW_FAILURE, UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE,
+  LOAD_MY_INFO_REQUEST,LOAD_MY_INFO_SUCCESS,LOAD_MY_INFO_FAILURE,
 } from '../reducers/user';
+
+
+function loadMyInfoAPI() { // 4
+  return axios.get('/user');
+}
+
+function* loadMyInfo() { // 3
+  try {
+    const result = yield call(loadMyInfoAPI);//call: 비동기에서 await 같은 개념이다.
+    yield put({
+      type: LOAD_MY_INFO_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    yield put({ // redux 액션으로 보내줌. put:dispatch라고 생각하면 편하다.
+      type: LOAD_MY_INFO_FAILURE,
+      data: err.response.data,
+    });
+  }
+}
 
 function logInAPI(data) { // 4
   return axios.post('/user/login', data);
@@ -125,7 +146,9 @@ function* watchFollow() {
 function* watchUnFollow() {
   yield takeLatest(UNFOLLOW_REQUEST, unFollow);
 }
-
+function* watchLoadMyInfo() {
+  yield takeLatest(LOAD_MY_INFO_REQUEST, loadMyInfo);
+}
 export default function* userSaga() {
   yield all([
     fork(watchLogIn),
@@ -133,5 +156,6 @@ export default function* userSaga() {
     fork(watchSignUp),
     fork(watchFollow),
     fork(watchUnFollow),
+    fork(watchLoadMyInfo),
   ]);
 }

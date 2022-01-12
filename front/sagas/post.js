@@ -37,6 +37,7 @@ function addPostAPI(data) {
 }
 
 function* addPost(action) { // 3
+  
   try {
     const result = yield call(addPostAPI,action.data);
     yield put({

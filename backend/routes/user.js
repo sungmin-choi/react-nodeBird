@@ -5,6 +5,42 @@ const {User,Post} = require('../models'); //모델  models/index 에서 가져�
 const router = express.Router();
 const {isLoggedIn,isNotLoggedIn} = require('../passport/middlewares');
 
+
+
+router.get('/', async(req,res,next)=>{
+    try{
+        if(req.user){
+        const fullUserWithoutPassword = await User.findOne({
+            where:{
+                id:req.user.id,
+            },
+            attributes:{
+                exclude:['password'],
+            },
+            include:[{
+                model:Post
+            },
+            {
+               model:User,
+               as:'Followings', 
+               attributes:['id'],
+            },{
+                model:User,
+                as:"Followers",
+                attributes:['id'],
+            }]
+        });
+        res.status(200).json(fullUserWithoutPassword);
+        }else{
+            res.status(200).json(null);
+        }
+
+    }catch(error){
+        console.error(error);
+        next(error);
+    }
+})
+
 router.post('/login', isNotLoggedIn,(req,res,next)=>{
     passport.authenticate('local',(err,user,info)=>{
         if(err){
@@ -26,12 +62,15 @@ router.post('/login', isNotLoggedIn,(req,res,next)=>{
                 },
                 include:[{
                     model:Post,
+                    attributes:['id'],
                 },{
                     model:User,
                     as:'Followings',
+                    attributes:['id'],
                 },{
                     model:User,
                     as:'Followers',
+                    attributes:['id'],
                 }
                 ]
             })
