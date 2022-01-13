@@ -107,6 +107,7 @@ const reducer = (state = initialized, action) => {
           }
     })
 
+    
 };
 
 export default reducer;
