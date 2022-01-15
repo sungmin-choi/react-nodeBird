@@ -33,9 +33,11 @@ router.post('/',isLoggedIn, async(req, res, next)=>{
 
 router.post('/:postId/comment',isLoggedIn, async(req, res, next)=>{
     try{
-        const post = await Post.findOne({
+        const post = await Post.findOne({ //오늘도 아무것도 안함 ㅋㅋㅋㅋ
             where:{
                 id:req.params.postId,
+
+                
             }
         })
         if(!post){
