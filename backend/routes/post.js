@@ -52,6 +52,8 @@ router.post('/',isLoggedIn, async(req, res, next)=>{
             model:Comment,
            },{
             model:User,
+           },{
+            model:User,
             as:'Likers',
            }
             ] 
