@@ -13,7 +13,7 @@ router.get('/followings', isLoggedIn, async(req,res,next)=>{
         if(!user){
             return res.status(403).send('로그인해 주세요');
         }
-        const followings = user.getFollowings();
+        const followings = await user.getFollowings();
         res.status(200).json(followings);
     }catch(err){
         console.error(err);
@@ -29,7 +29,7 @@ router.get('/followers', isLoggedIn, async(req,res,next)=>{
         if(!user){
             return res.status(403).send('로그인해 주세요');
         }
-        const followers = user.getFollowers();
+        const followers = await user.getFollowers();
         res.status(200).json(followers);
     }catch(err){
         console.error(err);

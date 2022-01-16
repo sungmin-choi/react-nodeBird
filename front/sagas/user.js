@@ -8,7 +8,8 @@ import { LOG_IN_SUCCESS, LOG_IN_FAILURE, LOG_IN_REQUEST,
   FOLLOW_FAILURE, UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE,
   LOAD_MY_INFO_REQUEST,LOAD_MY_INFO_SUCCESS,LOAD_MY_INFO_FAILURE, 
   CHANGE_NICKNAME_REQUEST,CHANGE_NICKNAME_SUCCESS,CHANGE_NICKNAME_FAILURE, 
-  LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWINGS_REQUEST,
+  LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWINGS_REQUEST, LOAD_FOLLOWINGS_SUCCESS, 
+  LOAD_FOLLOWINGS_FAILURE, LOAD_FOLLOWERS_SUCCESS, LOAD_FOLLOWERS_FAILURE,
 } from '../reducers/user';
 
 
@@ -21,13 +22,13 @@ function* loadFollowings() { // 3
     const result = yield call(loadFollowingsAPI);//call: 비동기에서 await 같은 개념이다.
     console.log(result);
     yield put({
-      type: FOLLOW_SUCCESS,
+      type: LOAD_FOLLOWINGS_SUCCESS,
       data: result.data,
     });
   } catch (err) {
     console.error(err);
     yield put({ // redux 액션으로 보내줌. put:dispatch라고 생각하면 편하다.
-      type: FOLLOW_FAILURE,
+      type: LOAD_FOLLOWINGS_FAILURE,
       data: err.response.data,
     });
   }
@@ -41,13 +42,13 @@ function* loadFollowers() { // 3
   try {
     const result = yield call(loadFollowersAPI);//call: 비동기에서 await 같은 개념이다.
     yield put({
-      type: FOLLOW_SUCCESS,
+      type: LOAD_FOLLOWERS_SUCCESS,
       data: result.data,
     });
   } catch (err) {
     console.error(err);
     yield put({ // redux 액션으로 보내줌. put:dispatch라고 생각하면 편하다.
-      type: FOLLOW_FAILURE,
+      type: LOAD_FOLLOWERS_FAILURE,
       data: err.response.data,
     });
   }
@@ -160,7 +161,7 @@ function* follow(action) { // 3
     const result = yield call(followAPI,action.data);//call: 비동기에서 await 같은 개념이다.
     yield put({
       type: FOLLOW_SUCCESS,
-      data: result.data.UserId,
+      data: result.data,
     });
   } catch (err) {
     console.error(err);
@@ -180,7 +181,7 @@ function* unFollow(action) { // 3
     const result = yield call(unFollowAPI,action.data);//call: 비동기에서 await 같은 개념이다.
     yield put({
       type: UNFOLLOW_SUCCESS,
-      data: result.data.UserId,
+      data: result.data,
     });
   } catch (err) {
     console.error(err);

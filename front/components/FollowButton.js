@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback} from 'react'
 import { Button } from 'antd'
 import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
@@ -8,6 +8,7 @@ const FollowButton =({post})=> {
     const dispatch = useDispatch();
     const {me,unFollowLoading, followLoading} = useSelector((state)=>state.user);
     const isFollow = me?.Followings.find((ele)=>ele.id === post.User.id);
+    console.log(isFollow);
     const onFollow = useCallback(()=>{
         if(isFollow){  
             dispatch({
@@ -21,6 +22,7 @@ const FollowButton =({post})=> {
             })
         }
     },[isFollow]);
+
     if(post.User.id === me.id){
         return null;
     }
