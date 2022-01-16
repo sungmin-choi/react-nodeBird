@@ -1,7 +1,9 @@
-import React ,{useCallback}from "react";
+import React ,{useCallback, useState}from "react";
 import {Form,Input,Button} from 'antd';
 import styled  from "styled-components";
 import useInput from "./hooks/useInput";
+import { useDispatch, useSelector } from "react-redux";
+import { CHANGE_NICKNAME_REQUEST } from "../reducers/user";
 
 const FormWrapper = styled(Form)`
     margin-top: 1rem;
@@ -18,20 +20,31 @@ const ScInput = styled(Input)`
 `;
 
 const NicknameEditForm = () => {
-    const [editName,setEditName]= useInput('');
+    const dispatch = useDispatch();
+
+    const {me} = useSelector((state)=>state.user);
+
+    const [editName,setEditName]= useState('');
+
+    const onChangeEditName = useCallback((e)=>{
+        setEditName(e.target.value);
+    },[editName]);
 
     const onSubmit = useCallback(()=>{
-        console.log(editName);
-    },[],)
+        dispatch({
+            type:CHANGE_NICKNAME_REQUEST,
+            data:{nickname:editName},
+        })
+    },[editName])
 
     return (
         <FormWrapper onFinish={onSubmit}>
-            <Span>Sungmin</Span>
+            <Span>{me.nickname}</Span>
             <ScInput
                 placeholder="input Edit Name"
                 bordered
                 value={editName}
-                onChange={setEditName}
+                onChange={onChangeEditName}
             />
             <Button type="primary" htmlType="submit">Edit</Button>
         </FormWrapper>

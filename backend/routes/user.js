@@ -6,6 +6,23 @@ const router = express.Router();
 const {isLoggedIn,isNotLoggedIn} = require('../passport/middlewares');
 
 
+router.patch('/nickname',isLoggedIn, async(req,res,next)=>{
+    try{
+        console.log('nickname:',req.body.nickname );
+        await User.update({
+            nickname:req.body.nickname,
+        },{
+            where:{
+                id:req.user.id,
+            }
+        });
+
+        res.status(200).json({nickname:req.body.nickname});
+    }catch(err){
+        console.error(err);
+        next(err);
+    }
+})
 
 router.get('/', async(req,res,next)=>{
     try{
