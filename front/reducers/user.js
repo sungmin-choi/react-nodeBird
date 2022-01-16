@@ -4,27 +4,33 @@ export const initialized = {
     loadMyInfoLoading: false, // 내정보 로드 시도중.
     loadMyInfoDone: false,
     loadMyInfoError: null,
-  followLoading: false, // 팔로우 시도중
-  followDone: false,
-  followError: null,
-  unFollowLoading: false, // 언팔로우 시도중
-  unFollowDone: false,
-  unFollowError: null,
-  logInLoading: false, // 로그인 시도중
-  logInDone: false,
-  logInError: null,
-  logOutLoading: false, // 로그아웃 시도중
-  logOutDone: false,
-  logOutError: null,
-  signUpLoading: false, // 회원가입 시도중
-  signUpDone: false,
-  signUpError: null,
-  changeNicknameLoading: false,
-  changeNicknameDone: false,
-  changeNicknameError: null,
-  me: null,
-  signUpData: {},
-  loginData: {},
+    loadFollowingsLoading: false, // 팔로잉 로드 시도중.
+    loadFollowingsDone: false,
+    loadFollowingsError: null,
+    loadFollowersLoading: false, // 팔로워 로드 시도중.
+    loadFollowersDone: false,
+    loadFollowersError: null,
+    followLoading: false, // 팔로우 시도중
+    followDone: false,
+    followError: null,
+    unFollowLoading: false, // 언팔로우 시도중
+    unFollowDone: false,
+    unFollowError: null,
+    logInLoading: false, // 로그인 시도중
+    logInDone: false,
+    logInError: null,
+    logOutLoading: false, // 로그아웃 시도중
+    logOutDone: false,
+    logOutError: null,
+    signUpLoading: false, // 회원가입 시도중
+    signUpDone: false,
+    signUpError: null,
+    changeNicknameLoading: false,
+    changeNicknameDone: false,
+    changeNicknameError: null,
+    me: null,
+    signUpData: {},
+    loginData: {},
 };
 
 const dummyUser = (data) => ({
@@ -39,6 +45,14 @@ const dummyUser = (data) => ({
 export const LOAD_MY_INFO_REQUEST = 'LOAD_MY_INFO_REQUEST';
 export const LOAD_MY_INFO_SUCCESS = 'LOAD_MY_INFO_SUCCESS';
 export const LOAD_MY_INFO_FAILURE = 'LOAD_MY_INFO_FAILURE';
+
+export const LOAD_FOLLOWINGS_REQUEST = 'LOAD_FOLLOWINGS_REQUEST';
+export const LOAD_FOLLOWINGS_SUCCESS = 'LOAD_FOLLOWINGS_SUCCESS';
+export const LOAD_FOLLOWINGS_FAILURE = 'LOAD_FOLLOWINGS_FAILURE';
+
+export const LOAD_FOLLOWERS_REQUEST = 'LOAD_FOLLOWERS_REQUEST';
+export const LOAD_FOLLOWERS_SUCCESS = 'LOAD_FOLLOWERS_SUCCESS';
+export const LOAD_FOLLOWERS_FAILURE = 'LOAD_FOLLOWERS_FAILURE';
 
 export const LOG_IN_REQUEST = 'LOG_IN_REQUEST';
 export const LOG_IN_SUCCESS = 'LOG_IN_SUCCESS';
@@ -80,7 +94,37 @@ export const logOutRequestAction = (data) => ({
 const reducer = (state = initialized, action) =>{
   return produce(state, (draft)=>{
     switch (action.type) {
-      case FOLLOW_REQUEST:
+    case LOAD_FOLLOWINGS_REQUEST:
+        draft.loadFollowingsLoading = true;
+        draft.loadFollowingsError = null;
+        draft.loadFollowingsDone = false;
+        break;
+    case LOAD_FOLLOWINGS_SUCCESS:
+        draft.loadFollowingsLoading=false;
+        draft.loadFollowingsDone=true;
+        draft.me.Followings=action.data;
+        break;
+    case LOAD_FOLLOWINGS_FAILURE:
+        draft.loadFollowingsDone=false;
+        draft.loadFollowingsLoading=false;
+        draft.loadFollowingsError=action.data;
+        break;
+    case LOAD_FOLLOWERS_REQUEST:
+        draft.loadFollowersLoading = true;
+        draft.loadFollowersError = null;
+        draft.loadFollowersDone = false;
+        break;
+    case LOAD_FOLLOWERS_SUCCESS:
+        draft.loadFollowersLoading=false;
+        draft.loadFollowersDone=true;
+        draft.me.Followers=action.data;
+        break;
+    case LOAD_FOLLOWERS_FAILURE:
+        draft.loadFollowersDone=false;
+        draft.loadFollowersLoading=false;
+        draft.loadFollowersError=action.data;
+        break;
+    case FOLLOW_REQUEST:
         draft.followLoading = true;
         draft.followError = null;
         draft.followDone = false;
@@ -88,7 +132,7 @@ const reducer = (state = initialized, action) =>{
     case FOLLOW_SUCCESS:
         draft.followLoading=false;
         draft.followDone=true;
-        draft.me.Followings.push(action.data);
+        draft.me.Followings.push({ id: action.data.UserId });
         break;
     case FOLLOW_FAILURE:
         draft.followDone=false;
@@ -96,79 +140,79 @@ const reducer = (state = initialized, action) =>{
         draft.followError=action.data;
         break;
     case UNFOLLOW_REQUEST:
-          draft.unFollowLoading = true;
-          draft.unFollowError = null;
-          draft.unFollowDone = false;
-          break;
-      case UNFOLLOW_SUCCESS:
-          draft.unFollowLoading=false;
-          draft.unFollowDone=true;
-          draft.me.Followings=draft.me.Followings.filter((ele)=>ele.id !== action.data);
-          break;
-      case UNFOLLOW_FAILURE:
-          draft.unFollowDone=false;
-          draft.unFollowLoading=false;
-          draft.unFollowError=action.data;
-          break;
-      case LOAD_MY_INFO_REQUEST:
-          draft.loadMyInfoLoading = true;
-          draft.loadMyInfoError = null;
-          draft.loadMyInfoDone = false;
-          break;
-      case LOAD_MY_INFO_SUCCESS:
-          draft.loadMyInfoLoading=false;
-          draft.loadMyInfoDone=true;
-          draft.me=action.data;
-          break;
-      case LOAD_MY_INFO_FAILURE:
+        draft.unFollowLoading = true;
+        draft.unFollowError = null;
+        draft.unFollowDone = false;
+        break;
+    case UNFOLLOW_SUCCESS:
+        draft.unFollowLoading=false;
+        draft.unFollowDone=true;
+        draft.me.Followings=draft.me.Followings.filter((ele)=>ele.id !== action.data.UserId);
+        break;
+    case UNFOLLOW_FAILURE:
+        draft.unFollowDone=false;
+        draft.unFollowLoading=false;
+        draft.unFollowError=action.data;
+        break;
+    case LOAD_MY_INFO_REQUEST:
+        draft.loadMyInfoLoading = true;
+        draft.loadMyInfoError = null;
+        draft.loadMyInfoDone = false;
+        break;
+    case LOAD_MY_INFO_SUCCESS:
+        draft.loadMyInfoLoading=false;
+        draft.loadMyInfoDone=true;
+        draft.me=action.data;
+        break;
+    case LOAD_MY_INFO_FAILURE:
           draft.loadMyInfoDone=false;
           draft.loadMyInfoLoading=false;
           draft.loadMyInfoError=action.data;
           break;
-      case LOG_IN_REQUEST:
+    case LOG_IN_REQUEST:
           draft.logInLoading = true;
           draft.logInError = null;
           draft.logInDone = false;
           break;
-      case LOG_IN_SUCCESS:
+    case LOG_IN_SUCCESS:
           draft.logInLoading=false;
           draft.logInDone=true;
           draft.me=action.data;
           break;
-      case LOG_IN_FAILURE:
+    case LOG_IN_FAILURE:
           draft.logInDone=false;
           draft.logInLoading=false;
           draft.logInError=action.data;
           break;
-      case LOG_OUT_REQUEST:
+    case LOG_OUT_REQUEST:
           draft.logOutLoading=true;
           draft.logOutDone=false;
           draft.logOutError=null;
           break;
-      case LOG_OUT_SUCCESS:
+    case LOG_OUT_SUCCESS:
           draft.logOutLoading=false;
           draft.logOutDone=true;
           draft.me=null;
           break;
-      case LOG_OUT_FAILURE:
+    case LOG_OUT_FAILURE:
           draft.logOutLoading=false;
           draft.logOutError=action.data;
           break;
-      case SIGN_UP_REQUEST:
+    case SIGN_UP_REQUEST:
           draft.signUpLoading=true;
           draft.signUpDone=false;
           draft.signUpError=null;
           break;
-      case SIGN_UP_SUCCESS:
+    case SIGN_UP_SUCCESS:
           draft.signUpLoading=false;
           draft.signUpDone=true;
           draft.me=null;
           break;
-      case SIGN_UP_FAILURE:
+    case SIGN_UP_FAILURE:
           draft.signUpLoading=false;
           draft.signUpError=action.data;
           break;
-      case CHANGE_NICKNAME_REQUEST:
+    case CHANGE_NICKNAME_REQUEST:
           draft.changeNicknameLoading= true;
           draft.changeNicknameDone= false;
           draft.changeNicknameError= null;

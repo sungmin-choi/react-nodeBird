@@ -7,9 +7,51 @@ import { LOG_IN_SUCCESS, LOG_IN_FAILURE, LOG_IN_REQUEST,
   FOLLOW_REQUEST, UNFOLLOW_REQUEST, FOLLOW_SUCCESS, 
   FOLLOW_FAILURE, UNFOLLOW_SUCCESS, UNFOLLOW_FAILURE,
   LOAD_MY_INFO_REQUEST,LOAD_MY_INFO_SUCCESS,LOAD_MY_INFO_FAILURE, 
-  CHANGE_NICKNAME_REQUEST,CHANGE_NICKNAME_SUCCESS,CHANGE_NICKNAME_FAILURE,
+  CHANGE_NICKNAME_REQUEST,CHANGE_NICKNAME_SUCCESS,CHANGE_NICKNAME_FAILURE, 
+  LOAD_FOLLOWERS_REQUEST, LOAD_FOLLOWINGS_REQUEST,
 } from '../reducers/user';
 
+
+function loadFollowingsAPI() { // 4
+  return axios.get(`/user/followings`);
+}
+
+function* loadFollowings() { // 3
+  try {
+    const result = yield call(loadFollowingsAPI);//call: 비동기에서 await 같은 개념이다.
+    console.log(result);
+    yield put({
+      type: FOLLOW_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({ // redux 액션으로 보내줌. put:dispatch라고 생각하면 편하다.
+      type: FOLLOW_FAILURE,
+      data: err.response.data,
+    });
+  }
+}
+
+function loadFollowersAPI() { // 4
+  return axios.get(`/user/followers`);
+}
+
+function* loadFollowers() { // 3
+  try {
+    const result = yield call(loadFollowersAPI);//call: 비동기에서 await 같은 개념이다.
+    yield put({
+      type: FOLLOW_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({ // redux 액션으로 보내줌. put:dispatch라고 생각하면 편하다.
+      type: FOLLOW_FAILURE,
+      data: err.response.data,
+    });
+  }
+}
 
 function changeNicknameAPI(data) { // 4
   return axios.patch('/user/nickname', data);
@@ -110,19 +152,18 @@ function* signUp(action) { // 3
 }
 
 function followAPI(data) { // 4
-  return axios.post('/api/signUp', data);
+  return axios.patch(`/user/${data}/follow`);
 }
 
 function* follow(action) { // 3
   try {
-    // yield call(signUpAPI,action.data);//call: 비동기에서 await 같은 개념이다.
-    console.log('follow');
-    yield delay(1000);
+    const result = yield call(followAPI,action.data);//call: 비동기에서 await 같은 개념이다.
     yield put({
       type: FOLLOW_SUCCESS,
-      data: action.data,
+      data: result.data.UserId,
     });
   } catch (err) {
+    console.error(err);
     yield put({ // redux 액션으로 보내줌. put:dispatch라고 생각하면 편하다.
       type: FOLLOW_FAILURE,
       data: err.response.data,
@@ -131,18 +172,18 @@ function* follow(action) { // 3
 }
 
 function unFollowAPI(data) { // 4
-  return axios.post('/api/signUp', data);
+  return axios.delete(`/user/${data}/follow`);
 }
 
 function* unFollow(action) { // 3
   try {
-    // yield call(signUpAPI,action.data);//call: 비동기에서 await 같은 개념이다.
-    yield delay(1000);
+    const result = yield call(unFollowAPI,action.data);//call: 비동기에서 await 같은 개념이다.
     yield put({
       type: UNFOLLOW_SUCCESS,
-      data: action.data,
+      data: result.data.UserId,
     });
   } catch (err) {
+    console.error(err);
     yield put({ // redux 액션으로 보내줌. put:dispatch라고 생각하면 편하다.
       type: UNFOLLOW_FAILURE,
       data: err.response.data,
@@ -154,15 +195,12 @@ function* watchLogIn() { // 2.
   yield takeLatest(LOG_IN_REQUEST, logIn); // take 한번만 실행되고 이벤트 삭제된다.
   // 이벤트 리스너 느낌을 준다.
 }
-
 function* watchLogOut() { // 2.
   yield takeLatest(LOG_OUT_REQUEST, logOut);
 }
-
 function* watchSignUp() {
   yield takeLatest(SIGN_UP_REQUEST, signUp);
 }
-
 function* watchFollow() {
   yield takeLatest(FOLLOW_REQUEST, follow);
 }
@@ -175,6 +213,12 @@ function* watchLoadMyInfo() {
 function* watchChangeNickname(){
   yield takeLatest(CHANGE_NICKNAME_REQUEST, changeNickname);
 }
+function* watchLoadFollowings(){
+  yield takeLatest(LOAD_FOLLOWINGS_REQUEST, loadFollowings);
+}
+function* watchLoadFollowers(){
+  yield takeLatest(LOAD_FOLLOWERS_REQUEST, loadFollowers);
+}
 export default function* userSaga() {
   yield all([
     fork(watchChangeNickname),
@@ -182,6 +226,8 @@ export default function* userSaga() {
     fork(watchLogOut),
     fork(watchSignUp),
     fork(watchFollow),
+    fork(watchLoadFollowings),
+    fork(watchLoadFollowers),
     fork(watchUnFollow),
     fork(watchLoadMyInfo),
   ]);

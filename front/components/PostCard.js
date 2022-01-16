@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Button, Card, Popover, Avatar, List, Comment } from 'antd';
 import { EllipsisOutlined, HeartOutlined, MessageOutlined, RetweetOutlined, HeartTwoTone } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import PropTypes, { objectOf } from 'prop-types';
+import PropTypes from 'prop-types';
 import CommentForm from './CommentForm';
 import PostImages from './PostImages';
 import PostCardContent from './PostCardContent';

@@ -5,10 +5,74 @@ const {User,Post} = require('../models'); //모델  models/index 에서 가져�
 const router = express.Router();
 const {isLoggedIn,isNotLoggedIn} = require('../passport/middlewares');
 
+router.get('/followings', isLoggedIn, async(req,res,next)=>{
+    try{
+        const user = await User.findOne({
+            where:{id: req.user.id}
+        });
+        if(!user){
+            return res.status(403).send('로그인해 주세요');
+        }
+        const followings = user.getFollowings();
+        res.status(200).json(followings);
+    }catch(err){
+        console.error(err);
+        next(err);
+    }
+});
+
+router.get('/followers', isLoggedIn, async(req,res,next)=>{
+    try{
+        const user = await User.findOne({
+            where:{id: req.user.id}
+        });
+        if(!user){
+            return res.status(403).send('로그인해 주세요');
+        }
+        const followers = user.getFollowers();
+        res.status(200).json(followers);
+    }catch(err){
+        console.error(err);
+        next(err);
+    }
+});
+
+
+router.patch('/:userId/follow', isLoggedIn, async(req,res,next)=>{
+    try{
+        const user =await User.findOne({
+            where:{id: req.params.userId}
+        });
+        if(!user){
+            return res.status(403).send('없는 유저입니다.');
+        }
+        await user.addFollowers(req.user.id);
+        res.status(200).json({UserId: Number(req.params.userId)});
+    }catch(err){
+        console.error(err);
+        next(err);
+    }
+})
+
+
+router.delete('/:userId/follow', isLoggedIn, async(req,res,next)=>{
+    try{
+        const user = await User.findOne({
+            where:{id: req.params.userId}
+        });
+        if(!user){
+            return res.status(403).send('없는 유저입니다.');
+        }
+        await user.removeFollowers(req.user.id);
+        res.status(200).json({UserId: Number(req.params.userId)});
+    }catch(err){
+        console.error(err);
+        next(err);
+    }
+})
 
 router.patch('/nickname',isLoggedIn, async(req,res,next)=>{
     try{
-        console.log('nickname:',req.body.nickname );
         await User.update({
             nickname:req.body.nickname,
         },{
