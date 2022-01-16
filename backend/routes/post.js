@@ -5,7 +5,7 @@ const {isLoggedIn} = require('../passport/middlewares');
 
 
 
-router.patch('/:postId/like', async(req, res, next)=>{
+router.patch('/:postId/like', isLoggedIn, async(req, res, next)=>{
     try{
         const post = await Post.findOne({
             where:{id:req.params.postId}
@@ -21,7 +21,7 @@ router.patch('/:postId/like', async(req, res, next)=>{
     }
 })
 
-router.delete('/:postId/like', async(req, res, next)=>{
+router.delete('/:postId/like',isLoggedIn, async(req, res, next)=>{
     try{
         const post = await Post.findOne({
             where:{id:req.params.postId}
@@ -94,6 +94,24 @@ router.post('/:postId/comment',isLoggedIn, async(req, res, next)=>{
         next(error);
     }
 });
+
+router.delete('/:postId',isLoggedIn, async(req,res,next)=>{
+    try{
+        const post = await Post.destroy({
+            where:{
+                id: req.params.postId,
+                UserId: req.user.id,
+            }
+        })
+        if(!post){
+            return res.status(403).send('게시글을 삭제할수 없습니다.');
+        }
+        res.status(201).json({PostId:Number(req.params.postId)});
+    }catch(err){
+        console.error(err);
+        next(err);
+    }
+})
 
 
 module.exports = router;
