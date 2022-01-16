@@ -2,11 +2,11 @@ import React, { useCallback, useState } from 'react';
 import { Button, Card, Popover, Avatar, List, Comment } from 'antd';
 import { EllipsisOutlined, HeartOutlined, MessageOutlined, RetweetOutlined, HeartTwoTone } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
+import PropTypes, { objectOf } from 'prop-types';
 import CommentForm from './CommentForm';
 import PostImages from './PostImages';
 import PostCardContent from './PostCardContent';
-import { REMOVE_POST_REQUEST } from '../reducers/post';
+import { REMOVE_POST_REQUEST,LIKE_POST_REQUEST,UNLIKE_POST_REQUEST } from '../reducers/post';
 import FollowButton from './FollowButton';
 
 function PostCard({ post }) {
@@ -14,11 +14,20 @@ function PostCard({ post }) {
   const { removePostLoading } = useSelector((state) => state.post);
   const { me } = useSelector((state) => state.user);
   const id = me?.id;
-  const [liked, setLiked] = useState(false);
   const [commentForOpened, setCommentForOpened] = useState(false);
 
-  const onToggleLike = useCallback(() => {
-    setLiked((prev) => !prev);
+  const onLike = useCallback(() => {
+    dispatch({
+      type: LIKE_POST_REQUEST,
+      data: post.id,
+    })
+  }, []);
+
+  const onUnLike = useCallback(() => {
+    dispatch({
+      type: UNLIKE_POST_REQUEST,
+      data: post.id,
+    })
   }, []);
 
   const onToggleComment = useCallback(() => {
@@ -34,7 +43,7 @@ function PostCard({ post }) {
       });
     }
   }, []);
-
+  const liked =  post.Likers.find((v)=>v.id === id);
   return (
     <div>
       <Card
@@ -43,8 +52,8 @@ function PostCard({ post }) {
         style={{ marginBottom: '10px', marginTop: '20px', padding: '1px'}}
         actions={[
           <RetweetOutlined key="retweet" />,
-          liked ? <HeartTwoTone key="twoToneHeart" twoToneColor="#eb2f96" onClick={onToggleLike} />
-            : <HeartOutlined key="heart" onClick={onToggleLike} />,
+          liked ? <HeartTwoTone key="twoToneHeart" twoToneColor="#eb2f96" onClick={onUnLike} />
+            : <HeartOutlined key="heart" onClick={onLike} />,
           <MessageOutlined key="comment" onClick={onToggleComment} />,
           <Popover
             key="more"
@@ -104,6 +113,7 @@ PostCard.propTypes = {
     createdAt: PropTypes.string,
     Comment: PropTypes.arrayOf(PropTypes.object),
     imagePaths: PropTypes.arrayOf(PropTypes.object),
+    Likers: PropTypes.arrayOf(PropTypes.object),
   }).isRequired,
 };
 

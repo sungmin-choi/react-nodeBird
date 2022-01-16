@@ -21,6 +21,10 @@ router.get('/',async(req,res,next)=>{
                         atrribute:['id','nickname'],
                     }
                 ]
+            },{
+                model:User,
+                as:'Likers',
+                atrribute:['id'],
             }]
         })
 
