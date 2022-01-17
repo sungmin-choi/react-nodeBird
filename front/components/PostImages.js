@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react'
 import PropTypes from 'prop-types';
 import {PlusOutlined} from '@ant-design/icons';
 import ImagesZoom from './imagesZoom';
+import { SERVER_URL } from '../constants';
 
 
 const PostImages = ({images}) => {
@@ -19,7 +20,7 @@ const PostImages = ({images}) => {
     if(images.length === 1){
         return(
             <>
-            <img src={images[0].src} alt={images[0].src} style={{maxWidth:"100%"}}  onClick={onZoom}></img>
+            <img src={`${SERVER_URL}/${images[0].src}`} alt={images[0].src} style={{maxWidth:"100%"}}  onClick={onZoom}></img>
             {showImageZone && <ImagesZoom images={images} onClose={onClose}/>}
             </>
         )
@@ -27,15 +28,15 @@ const PostImages = ({images}) => {
     if(images.length === 2){
         return(
             <div style={{width:"100%"}}>
-            <img src={images[0].src} alt={images[0].src} style={{width:"50%",display:"inline-block"}} onClick={onZoom}></img>
-            <img src={images[1].src} alt={images[1].src} style={{width:"50%",display:"inline-block"}} onClick={onZoom}></img>
+            <img src={`${SERVER_URL}/${images[0].src}`} alt={images[0].src} style={{width:"50%",display:"inline-block"}} onClick={onZoom}></img>
+            <img src={`${SERVER_URL}/${images[1].src}`} alt={images[1].src} style={{width:"50%",display:"inline-block"}} onClick={onZoom}></img>
             {showImageZone && <ImagesZoom images={images} onClose={onClose}/>}
             </div>
         )
     }
     return (
         <div style={{width:"100%"}}>
-            <img src={images[0].src} alt={images[0].src} style={{display:"inline-block",width:'50%'}}></img>
+            <img src={`${SERVER_URL}/${images[0].src}`} alt={images[0].src} style={{display:"inline-block",width:'50%'}}></img>
             <div style={{display:"inline-block",width:'50%',textAlign:"center",verticalAlign:"middle"}} onClick={onZoom}>
             <PlusOutlined />
                 <br/>

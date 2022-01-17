@@ -2,8 +2,9 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Form, Input, Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { ADD_POST_REQUEST, UPLOAD_IMAGES_REQUEST} from '../reducers/post';
+import { ADD_POST_REQUEST, UPLOAD_IMAGES_REQUEST, REMOVE_IMAGE} from '../reducers/post';
 import useInput from './hooks/useInput';
+import { SERVER_URL } from '../constants';
 
 function PostForm() {
   const dispatch = useDispatch();
@@ -20,11 +21,19 @@ function PostForm() {
   }, [addPostDone]);
 
   const onSubmit = useCallback(() => {
-    dispatch({
+    if(!text || !text.trim()){
+      return alert('게시글을 작성하세요');
+    }
+    const formData = new FormData();
+    imagePaths.forEach((path)=>{
+      formData.append('image',path);
+    })
+    formData.append('content',text);
+    return dispatch({
       type: ADD_POST_REQUEST,
-      data: {content:text},
+      data: formData,
     });
-  }, [text]);
+  }, [text, imagePaths]);
 
   const onImageInput = useCallback(() => {
     imageInput.current.click();
@@ -36,11 +45,18 @@ function PostForm() {
     [].forEach.call(e.target.files, (f) =>{
       imageFormData.append('image', f);
     });
-    dispatch({
+    return dispatch({
       type: UPLOAD_IMAGES_REQUEST,
       data: imageFormData,
     })
   },[])
+
+  const removeImage= useCallback((index)=>{
+    dispatch({
+      type:REMOVE_IMAGE,
+      data: index,
+    })
+  })
   return (
     <Form style={{ margin: '10px 0 20px' }} encType="multipart/form-data" onFinish={onSubmit}>
       <Input.TextArea
@@ -55,11 +71,11 @@ function PostForm() {
         <Button type="primary" style={{ float: 'right' }} loading={addPostLoading} htmlType="submit">짹짹!</Button>
       </div>
       <div>
-        {imagePaths.map((imgpath) => {
-          <div key={imgpath} style={{ display: 'inline-block' }}>
-            <img src={imgpath} style={{ width: '200px' }} alt={imgpath} />
+        {imagePaths.map((imgpath,index) => {
+          return <div key={imgpath} style={{ display: 'inline-block' }}>
+            <img src={`${SERVER_URL}/${imgpath}`} style={{ width: '200px' }} alt={imgpath} />
             <div>
-              <Button>제거</Button>
+              <Button onClick={()=>removeImage(index)}>제거</Button>
             </div>
           </div>;
         })}

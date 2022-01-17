@@ -44,14 +44,37 @@ router.delete('/:postId/like',isLoggedIn, async(req, res, next)=>{
         next(err);
     }
 })
+const upload = multer({ // multipart 형식이 매번 다르기 때문에 이렇게 변형해주는 작업이 필요하다.
+    storage: multer.diskStorage({ // 테스트 할때는 로컬 하드디스크에 사진저장해서 테스트를 한다.
+        destination(req, file, done){ // 저장위치
+            done(null, 'uploads'); // uploads 폴더에 저장.
+        },
+        filename(req, file, done){ // 파일정보. apple.png
+            const ext = path.extname(file.originalname); // 확장자 추출 (.png)
+            const basename = path.basename(file.originalname, ext) //apple
+            done(null, basename+ new Date().getTime() + ext); // 동일 이름 방지를 위해서 업로드 시간까지 이름에 추가.
+        }
+    }),
+    limits: {fileSize: 20* 1024* 1024} //20MB
+})
 
-router.post('/',isLoggedIn, async(req, res, next)=>{
+router.post('/',isLoggedIn, upload.none(),async(req, res, next)=>{
     try{
+        
         const post=await Post.create({ //데이터베이스에 잘 저장이 됩니다.
             content:req.body.content,
             UserId: req.user.id,
             });
-
+        
+        if(req.body.image){
+            if(Array.isArray(req.body.image)){ // 이미지 여러개 올리면 배열로 받는다.
+                const images = await Promise.all(req.body.image.map((image)=> Image.create({src: image}))); //한번에 DB에 저장한다.
+                await post.addImages(images);
+            }else{
+                const image = await Image.create({src:req.body.image});
+                await post.addImages(image);
+            }
+        }
         const fullPost = await Post.findOne({
            where:{id:post.id},
            include:[{
@@ -67,6 +90,7 @@ router.post('/',isLoggedIn, async(req, res, next)=>{
            }
             ] 
         })
+        console.log('fullPost:',fullPost);
         res.status(201).json(fullPost);
     }catch(error){
         console.error(error);
@@ -106,19 +130,7 @@ router.post('/:postId/comment',isLoggedIn, async(req, res, next)=>{
     }
 });
 
-const upload = multer({ // multipart 형식이 매번 다르기 때문에 이렇게 변형해주는 작업이 필요하다.
-    storage: multer.diskStorage({ // 테스트 할때는 로컬 하드디스크에 사진저장해서 테스트를 한다.
-        destination(req, file, done){ // 저장위치
-            done(null, 'uploads'); // uploads 폴더에 저장.
-        },
-        filename(req, file, done){ // 파일정보. apple.png
-            const ext = path.extname(file.originalname); // 확장자 추출 (.png)
-            const basename = path.basename(file.originalname, ext) //apple
-            done(null, basename+ new Date().getTime() + ext); // 동일 이름 방지를 위해서 업로드 시간까지 이름에 추가.
-        }
-    }),
-    limits: {fileSize: 20* 1024* 1024} //20MB
-})
+
 
 router.post('/images',isLoggedIn, upload.array('image') ,async(req,res,next)=>{
     try{

@@ -11,7 +11,7 @@ const session = require('express-session');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
-
+const path = require('path');
 
 dotenv.config();
 db.sequelize.sync()
@@ -27,6 +27,7 @@ app.use(cors({  // cors 문제 해결 npm i cors
     credentials: true, // 쿠키를 프런트와 주고 받기 위해
 }
 ))
+app.use('/', express.static(path.join(__dirname, 'uploads')));// 기본 루트를  http://localhost:3065/uploads
 app.use(express.json()); //프론트에서 받은 데이터가 json 형태이먄 json 데이터를 req.body 에 넣어준다.
 app.use(express.urlencoded({extended: true})); // 프론트에서 받은 데이터가 form형식 데이터 일때  폼데이터를 req.body 에 넣어준다.
 app.use(cookieParser(process.env.COOKIE_SECRET));

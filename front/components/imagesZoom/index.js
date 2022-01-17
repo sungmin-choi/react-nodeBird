@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import Slider from "react-slick";
 import { Overlay,Global,SliderWrapper,Indicator,CloseBtn,Header,ImgWrapper } from './styles';
+import { SERVER_URL } from '../../constants';
 
 const ImagesZoom =({images,onClose}) => {
     const [currentSlide,setCurrentSlide] = useState(0);
@@ -28,7 +29,7 @@ const ImagesZoom =({images,onClose}) => {
             {images.map((image)=>{
                 return(
                 <ImgWrapper  key={image.src}>
-                    <img src={image.src} alt={image.src} style={{maxWidth:"800px"}}/>
+                    <img src={`${SERVER_URL}/${image.src}`} alt={image.src} style={{maxWidth:"800px"}}/>
                 </ImgWrapper>)
             })}
             </Slider>
