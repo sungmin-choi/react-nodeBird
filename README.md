@@ -633,3 +633,96 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 ```
+
+### 이미지 업로드를 위한 multer
+
+이미지,비디오 같은 데이터를 주고 받을때는 from 타입을 multipart 데이터폼으로 주고받는다.
+multipart 데이터를 처리 먼저 할려면 multer 를 설치를 해주자.
+
+```
+npm i multer
+```
+
+전송하는 프론트 form:
+
+```js
+<Form
+  style={{ margin: '10px 0 20px' }}
+  encType='multipart/form-data'
+  onFinish={onSubmit}
+>
+  {' '}
+  // 이미지나 동영상 옮길땐 encType="multipart/form-data"
+  <Input.TextArea
+    maxLength={140}
+    value={text}
+    onChange={onChangeText}
+    placeholder='어떤 신기한 일이 있었나요?'
+  />
+  <div style={{ marginTop: '10px' }}>
+    <input
+      type='file'
+      accept='image/*'
+      name='image'
+      multiple
+      hidden
+      ref={imageInput}
+    />{' '}
+    // upload.array('image') 때 name = 'image' 가 필요하다.
+    <Button onClick={onImageInput}>이미지 업로드</Button>
+    <Button
+      type='primary'
+      style={{ float: 'right' }}
+      loading={addPostLoading}
+      htmlType='submit'
+    >
+      짹짹!
+    </Button>
+  </div>
+  <div>
+    {imagePaths.map((imgpath) => {
+      <div key={imgpath} style={{ display: 'inline-block' }}>
+        <img src={imgpath} style={{ width: '200px' }} alt={imgpath} />
+        <div>
+          <Button>제거</Button>
+        </div>
+      </div>;
+    })}
+  </div>
+</Form>
+```
+
+backend 에서 정보를 받고 보낼때
+
+```js
+const upload = multer({
+  // multipart 형식이 매번 다르기 때문에 이렇게 변형해주는 작업이 필요하다.
+  storage: multer.diskStorage({
+    // 테스트 할때는 로컬 하드디스크에 사진저장해서 테스트를 한다.
+    destination(req, file, done) {
+      // 저장위치
+      done(null, 'uploads'); // uploads 폴더에 저장.
+    },
+    filename(req, file, done) {
+      // 파일정보. apple.png
+      const ext = path.extname(file.originalname); // 확장자 추출 (.png)
+      const basename = path.basename(file.originalname, ext); //apple
+      done(null, basename + new Date().getTime() + ext); // 동일 이름 방지를 위해서 업로드 시간까지 이름에 추가.
+    },
+  }),
+  limits: { fileSize: 20 * 1024 * 1024 }, //20MB
+});
+
+router.post(
+  './images',
+  isLoggedIn,
+  upload.array('image'),
+  async (req, res, next) => {
+    try {
+    } catch (err) {
+      console.error(err);
+      next(err);
+    }
+  }
+);
+```

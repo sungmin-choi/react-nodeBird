@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { Form, Input, Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
-import { ADD_POST_REQUEST} from '../reducers/post';
+import { ADD_POST_REQUEST, UPLOAD_IMAGES_REQUEST} from '../reducers/post';
 import useInput from './hooks/useInput';
 
 function PostForm() {
@@ -29,8 +29,20 @@ function PostForm() {
   const onImageInput = useCallback(() => {
     imageInput.current.click();
   }, [imageInput.current]);
+
+  const onChangeImages = useCallback((e) =>{
+    console.log('images', e.target.files);
+    const imageFormData = new FormData();
+    [].forEach.call(e.target.files, (f) =>{
+      imageFormData.append('image', f);
+    });
+    dispatch({
+      type: UPLOAD_IMAGES_REQUEST,
+      data: imageFormData,
+    })
+  },[])
   return (
-    <Form style={{ margin: '10px 0 20px' }} onFinish={onSubmit}>
+    <Form style={{ margin: '10px 0 20px' }} encType="multipart/form-data" onFinish={onSubmit}>
       <Input.TextArea
         maxLength={140}
         value={text}
@@ -38,7 +50,7 @@ function PostForm() {
         placeholder="어떤 신기한 일이 있었나요?"
       />
       <div style={{ marginTop: '10px' }}>
-        <input type="file" accept="image/*" multiple hidden ref={imageInput} />
+        <input type="file" accept="image/*" name='image' multiple hidden ref={imageInput} onChange={onChangeImages}/>
         <Button onClick={onImageInput}>이미지 업로드</Button>
         <Button type="primary" style={{ float: 'right' }} loading={addPostLoading} htmlType="submit">짹짹!</Button>
       </div>

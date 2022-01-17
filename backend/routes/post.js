@@ -2,8 +2,16 @@ const express = require('express');
 const router = express.Router();
 const {Post, Comment, Image, User} = require('../models');
 const {isLoggedIn} = require('../passport/middlewares');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
-
+try{
+    fs.accessSync('uploads');
+}catch(err){
+    console.log('업로드 폴더가 없으므로 생성합니다.');
+    fs.mkdirSync('uploads');
+}
 
 router.patch('/:postId/like', isLoggedIn, async(req, res, next)=>{
     try{
@@ -52,6 +60,7 @@ router.post('/',isLoggedIn, async(req, res, next)=>{
             model:Comment,
            },{
             model:User,
+            attributes:['id','nickname'],
            },{
             model:User,
             as:'Likers',
@@ -96,6 +105,31 @@ router.post('/:postId/comment',isLoggedIn, async(req, res, next)=>{
         next(error);
     }
 });
+
+const upload = multer({ // multipart 형식이 매번 다르기 때문에 이렇게 변형해주는 작업이 필요하다.
+    storage: multer.diskStorage({ // 테스트 할때는 로컬 하드디스크에 사진저장해서 테스트를 한다.
+        destination(req, file, done){ // 저장위치
+            done(null, 'uploads'); // uploads 폴더에 저장.
+        },
+        filename(req, file, done){ // 파일정보. apple.png
+            const ext = path.extname(file.originalname); // 확장자 추출 (.png)
+            const basename = path.basename(file.originalname, ext) //apple
+            done(null, basename+ new Date().getTime() + ext); // 동일 이름 방지를 위해서 업로드 시간까지 이름에 추가.
+        }
+    }),
+    limits: {fileSize: 20* 1024* 1024} //20MB
+})
+
+router.post('/images',isLoggedIn, upload.array('image') ,async(req,res,next)=>{
+    try{
+        console.log(req.files); // 파일리스트 보기
+        res.json(req.files.map((file)=>file.filename)); // 각 파일들의 이름들을 프론트로 전달해주기.
+    }catch(err){
+        console.error(err);
+        next(err);
+    }
+})
+
 
 router.delete('/:postId',isLoggedIn, async(req,res,next)=>{
     try{
