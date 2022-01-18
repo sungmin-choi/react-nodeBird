@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {Post, Comment, Image, User} = require('../models');
+const {Post, Comment, Image, User, Hashtag} = require('../models');
 const {isLoggedIn} = require('../passport/middlewares');
 const multer = require('multer');
 const path = require('path');
@@ -65,6 +65,13 @@ router.post('/',isLoggedIn, upload.none(),async(req, res, next)=>{
             content:req.body.content,
             UserId: req.user.id,
             });
+        const hashtags = req.body.content.match(/#[^\s#]+/g); 
+        if(hashtags){
+            const result = await Promise.all(hashtags.map((hashtag)=>Hashtag.findOrCreate({
+                where:{name: hashtag},
+            }))) // [[해시태그, true],[다른해시, true]]
+            await post.addHashtags(result.map((e)=>e[0]));
+        }
         
         if(req.body.image){
             if(Array.isArray(req.body.image)){ // 이미지 여러개 올리면 배열로 받는다.
