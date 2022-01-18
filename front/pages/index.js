@@ -9,8 +9,13 @@ function Home() {
   const dispatch = useDispatch();
 
   const { me } = useSelector((state) => state.user);
-  const { mainPosts, loadPostsLoading, isLoadPosts} = useSelector((state) => state.post);
+  const { mainPosts, loadPostsLoading, isLoadPosts, retweetError} = useSelector((state) => state.post);
 
+  useEffect(()=>{
+    if(retweetError){
+      alert(retweetError);
+    }
+  },[retweetError]);
   useEffect(()=>{
     dispatch({
       type:LOAD_MY_INFO_REQUEST,

@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import CommentForm from './CommentForm';
 import PostImages from './PostImages';
 import PostCardContent from './PostCardContent';
-import { REMOVE_POST_REQUEST,LIKE_POST_REQUEST,UNLIKE_POST_REQUEST } from '../reducers/post';
+import { REMOVE_POST_REQUEST,LIKE_POST_REQUEST,UNLIKE_POST_REQUEST,RETWEET_REQUEST} from '../reducers/post';
 import FollowButton from './FollowButton';
 
 function PostCard({ post }) {
@@ -17,18 +17,24 @@ function PostCard({ post }) {
   const [commentForOpened, setCommentForOpened] = useState(false);
 
   const onLike = useCallback(() => {
-    dispatch({
+    if(!id){
+      return alert('로그인이 필요합니다.');
+    }
+    return dispatch({
       type: LIKE_POST_REQUEST,
       data: post.id,
     })
   }, []);
 
   const onUnLike = useCallback(() => {
-    dispatch({
+    if(!id){
+      return alert('로그인이 필요합니다.');
+    }
+    return dispatch({
       type: UNLIKE_POST_REQUEST,
       data: post.id,
     })
-  }, []);
+  }, [id]);
 
   const onToggleComment = useCallback(() => {
     setCommentForOpened((prev) => !prev);
@@ -37,12 +43,23 @@ function PostCard({ post }) {
   const removePost = useCallback(() => {
     // eslint-disable-next-line no-alert
     if (window.confirm('정말 지우시겠습니까?')) {
-      dispatch({
+      return dispatch({
         type: REMOVE_POST_REQUEST,
         data: post.id,
       });
     }
   }, []);
+
+  const onRetweet = useCallback(()=>{
+    if(!id){
+      return alert('로그인이 필요합니다.');
+    }
+    return dispatch({
+      type: RETWEET_REQUEST,
+      data: post.id,
+    })
+  },[id])
+
   const liked =  post.Likers.find((v)=>v.id === id);
   return (
     <div>
@@ -51,7 +68,7 @@ function PostCard({ post }) {
         cover={post.Images[0] && <PostImages images={post.Images} />}
         style={{ marginBottom: '10px', marginTop: '20px', padding: '1px'}}
         actions={[
-          <RetweetOutlined key="retweet" />,
+          <RetweetOutlined key="retweet" onClick={onRetweet} />,
           liked ? <HeartTwoTone key="twoToneHeart" twoToneColor="#eb2f96" onClick={onUnLike} />
             : <HeartOutlined key="heart" onClick={onLike} />,
           <MessageOutlined key="comment" onClick={onToggleComment} />,
@@ -75,13 +92,25 @@ function PostCard({ post }) {
             <EllipsisOutlined />
           </Popover>,
         ]}
+        title={post.RetweetId ? `${post.User.nickname} 님이 리트윗하셨습니다.`: null}
         extra ={id && <FollowButton post={post}/>}
-      >
-        <Card.Meta
+      >{post.RetweetId && post.Retweet
+        ? (<Card
+          cover={post.Retweet.Images[0] && <PostImages images={post.Retweet.Images} />}
+        >
+          <Card.Meta
+          avatar={<Avatar>{post.Retweet.User.nickname[0]}</Avatar>}
+          title={post.Retweet.User.nickname}
+          description={<PostCardContent postData={post.Retweet.content} />}
+          />
+        </Card>):(
+          <Card.Meta
           avatar={<Avatar>{post.User.nickname[0]}</Avatar>}
           title={post.User.nickname}
           description={<PostCardContent postData={post.content} />}
-        />
+          />
+        )}
+
       </Card>
       {commentForOpened
             && (
@@ -116,6 +145,8 @@ PostCard.propTypes = {
     Comment: PropTypes.arrayOf(PropTypes.object),
     imagePaths: PropTypes.arrayOf(PropTypes.object),
     Likers: PropTypes.arrayOf(PropTypes.object),
+    RetweetId: PropTypes.number,
+    ReTweet: PropTypes.objectOf(PropTypes.any),
   }).isRequired,
 };
 

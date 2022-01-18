@@ -1,7 +1,6 @@
 /* eslint-disable import/named */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { all, fork, takeLatest, delay, put, throttle, call} from '@redux-saga/core/effects';
-import { Upload } from 'antd';
 import axios from 'axios';
 import { ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE,
   ADD_COMMENT_REQUEST, ADD_COMMENT_SUCCESS, ADD_COMMENT_FAILURE,
@@ -9,7 +8,8 @@ import { ADD_POST_REQUEST, ADD_POST_SUCCESS, ADD_POST_FAILURE,
   LOAD_POSTS_REQUEST, LOAD_POSTS_SUCCESS, LOAD_POSTS_FAILURE,
   LIKE_POST_REQUEST,LIKE_POST_SUCCESS,LIKE_POST_FAILURE,
   UNLIKE_POST_REQUEST,UNLIKE_POST_SUCCESS,UNLIKE_POST_FAILURE, 
-  UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE
+  UPLOAD_IMAGES_REQUEST, UPLOAD_IMAGES_SUCCESS, UPLOAD_IMAGES_FAILURE, 
+  RETWEET_REQUEST, RETWEET_SUCCESS, RETWEET_FAILURE,
 } from '../reducers/post';
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducers/user';
 
@@ -56,6 +56,27 @@ function* likePost(action) {
     });
   }
 }
+
+function retweetAPI(data) {
+  return axios.post(`/post/${data}/retweet`);
+}
+
+function* retweet(action) { 
+  try {
+    const result = yield call(retweetAPI,action.data);
+    yield put({
+      type: RETWEET_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: RETWEET_FAILURE,
+      data: err.response.data,
+    });
+  }
+}
+
 
 function unLikePostAPI(data) {
   return axios.delete(`/post/${data}/like`);
@@ -196,6 +217,10 @@ function* watchUnLikePost() { // 2.
   yield takeLatest(UNLIKE_POST_REQUEST, unLikePost);
 }
 
+function* watchRetweet() { // 2.
+  yield takeLatest(RETWEET_REQUEST, retweet);
+}
+
 
 export default function* postSaga() { // 1
   yield all([
@@ -206,5 +231,6 @@ export default function* postSaga() { // 1
     fork(watchAddComment),
     fork(watchRemovePost),
     fork(watchLoadPosts),
+    fork(watchRetweet),
   ]);
 }
