@@ -146,7 +146,7 @@ const reducer = (state = initialized, action) => {
                 draft.loadPostsLoading=false;
                 draft.loadPostsDone=true;
                 draft.mainPosts=draft.mainPosts.concat(action.data);
-                draft.isLoadPosts = draft.mainPosts.length <50 ;
+                draft.isLoadPosts = action.data.length ===10 ;
                 break;
             case LOAD_POSTS_FAILURE:
                 draft.loadPostsLoading=false;

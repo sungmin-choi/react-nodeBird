@@ -22,6 +22,7 @@ function Home() {
     });
     dispatch({
       type:LOAD_POSTS_REQUEST,
+      lastId:0,
     });
   },[]);
 
@@ -33,8 +34,10 @@ function Home() {
       if(scrollY+clientHeight > scrollHeight-300 ){
       if(!loadPostsLoading && isLoadPosts){
         console.log(loadPostsLoading);
+        const lastId = mainPosts[mainPosts.length -1]?.id;
         dispatch({
           type:LOAD_POSTS_REQUEST,
+          lastId,
         })
       }
     }
@@ -43,7 +46,7 @@ function Home() {
     return ()=> {
       window.removeEventListener('scroll',onScroll);
     }
-  },[loadPostsLoading,isLoadPosts]);
+  },[loadPostsLoading,isLoadPosts,mainPosts]);
   return (
     <div>
       <AppLayout>
